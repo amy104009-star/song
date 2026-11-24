@@ -39,21 +39,38 @@
   .marquee-text { width: max-content; padding-inline-start: 100%; white-space: nowrap; font-weight: 650; animation: playlist-scroll var(--scroll-time, 20s) linear infinite; }
   @keyframes playlist-scroll { to { transform: translateX(-100%); } }
   #playlist-marquee { position: relative; isolation: isolate; overflow: hidden; }
-  #playlist-marquee::before {
-    content: "";
+  #playlist-marquee::before, #playlist-marquee::after {
     position: absolute;
     inset: 0;
     pointer-events: none;
+    opacity: 0;
+  }
+  #playlist-marquee.effect-rays::before {
+    content: "";
     background:
       radial-gradient(ellipse at 50% 55%, #fff9dc 0%, transparent 68%),
       repeating-conic-gradient(from 18deg at 50% 55%, #e2ac46 0 9deg, transparent 12deg 27deg);
-    opacity: 0;
     animation: marquee-radiance 12s ease-in-out infinite;
   }
-  #playlist-marquee .marquee-window { position: relative; }
+  #playlist-marquee.effect-twinkle::after {
+    content: "";
+    background:
+      radial-gradient(circle at 12% 35%, #fff8d7 0 2px, transparent 4px),
+      radial-gradient(circle at 78% 67%, #fff8d7 0 2px, transparent 4px),
+      radial-gradient(circle at 94% 27%, #fff 0 1px, transparent 3px);
+    animation: marquee-twinkle 8s ease-in-out infinite;
+  }
+  #playlist-marquee .marquee-window { position: relative; z-index: 1; }
+  #playlist-marquee.effect-float { --float-animation: marquee-float; }
+  #playlist-marquee.effect-fade { --fade-animation: marquee-fade; }
   #marquee-text {
     animation: playlist-scroll var(--scroll-time, 20s) linear infinite,
-      marquee-float 6s ease-in-out infinite, marquee-fade 12s ease-in-out infinite;
+      var(--float-animation, none) 6s ease-in-out infinite,
+      var(--fade-animation, none) 12s ease-in-out infinite;
+  }
+  @keyframes marquee-twinkle {
+    0%, 35%, 70%, 100% { opacity: 0; }
+    18%, 54%, 85% { opacity: .72; }
   }
   @keyframes marquee-radiance {
     0%, 26%, 67%, 100% { opacity: .04; transform: scale(.94); }
@@ -71,7 +88,7 @@
     48%, 56% { opacity: 1; }
   }
   @media (prefers-reduced-motion: reduce) {
-    #playlist-marquee::before, #marquee-text { animation: none; }
+    #playlist-marquee.effect-rays::before, #playlist-marquee.effect-twinkle::after, #marquee-text { animation: none; }
     .marquee-text { animation: none; padding-inline-start: 0; width: auto; white-space: normal; overflow-wrap: anywhere; }
   }
   .announcements { margin-bottom: 1.4rem; padding: .9rem; border: 1px solid #e3ba6b; border-radius: 1rem; background: #fff4cbe8; }
@@ -413,6 +430,7 @@
 <script id="announcement-data" type="application/json">{"lastAddedAt":1795496137732,"ids":[107,108,109,110,111,112,113,114,115,116]}</script>
 <script id="playlist-message-data" type="application/json">""</script>
 <script id="playlist-message-two-data" type="application/json">""</script>
+<script id="marquee-effects-data" type="application/json">["fade","float","rays","twinkle"]</script>
 <script id="language-visibility-data" type="application/json">[]</script>
 <script type="module">
 const $ = (id) => document.getElementById(id);
@@ -727,6 +745,13 @@ function renderMarquee(message, suffix = "") {
 
 renderMarquee(JSON.parse($("playlist-message-data").textContent));
 renderMarquee(JSON.parse($("playlist-message-two-data").textContent), "-two");
+function renderMarqueeEffects(effects) {
+  const bar = $("playlist-marquee");
+  for (const effect of ["fade", "float", "rays", "twinkle"]) {
+    bar.classList.toggle("effect-" + effect, effects.includes(effect));
+  }
+}
+renderMarqueeEffects(JSON.parse($("marquee-effects-data").textContent));
 
 updateOptions();
 renderAnnouncements();
@@ -740,9 +765,10 @@ async function loadLatestSongs() {
       signal: AbortSignal.timeout(4500),
     });
     if (!response.ok) return;
-    const { songs: latest, announcements: notice, message, messageTwo, hiddenLanguages: settings } = await response.json();
+    const { songs: latest, announcements: notice, message, messageTwo, marqueeEffects, hiddenLanguages: settings } = await response.json();
     if (typeof message === "string") renderMarquee(message);
     if (typeof messageTwo === "string") renderMarquee(messageTwo, "-two");
+    if (Array.isArray(marqueeEffects)) renderMarqueeEffects(marqueeEffects);
     if (!Array.isArray(latest) || !latest.every((song) => song &&
       Number.isSafeInteger(song.id) && typeof song.title === "string" &&
       typeof song.artist === "string") ||
