@@ -2,8 +2,8 @@ import { mkdir, readFile, writeFile, appendFile } from "node:fs/promises";
 
 const seedPattern = /(<script id="seed" type="application\/json">)([\s\S]*?)(<\/script>)/;
 const template = await readFile("public-template/index.html", "utf8");
-if (!template.includes('id="recent"') || !template.includes('value="latest"')) {
-  throw new Error("The public template is missing the recent songs filter");
+if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
+  throw new Error("The public template is missing the new songs announcement board");
 }
 const response = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/songs", {
   signal: AbortSignal.timeout(20000),
