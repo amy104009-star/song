@@ -327,6 +327,11 @@
   .artist-select { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; font-size: .85rem; }
   .artist-select select { width: auto; max-width: 100%; min-height: 2.4rem; padding-block: .2rem; background: #fffaf3; border-color: #e4d5ca; }
   .announcements { margin-bottom: .9rem; }
+  .daily-picks-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .3rem .9rem; }
+  .daily-picks-header time { color: #6d512e; font-size: .88rem; }
+  .daily-picks-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; margin-top: .65rem; }
+  .daily-picks-list .card { background: #fffaf0; }
+  @media (min-width: 56rem) { .daily-picks-list { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
   @media (max-width: 37rem) {
     .playlist-header { border-radius: 1.2rem; }
     .radio-filters { gap: .8rem; }
@@ -383,6 +388,13 @@
   </section>
   <section class="playlist-marquee" id="playlist-marquee-two" aria-label="第二條歌單留言" hidden>
     <div class="marquee-window"><p id="marquee-text-two" class="marquee-text"></p></div>
+  </section>
+  <section class="announcements" id="daily-picks" aria-labelledby="daily-picks-title" hidden>
+    <div class="daily-picks-header">
+      <h2 id="daily-picks-title">日推五首</h2>
+      <time id="daily-picks-date"></time>
+    </div>
+    <ol id="daily-picks-list" class="daily-picks-list"></ol>
   </section>
   <section class="song-filters radio-filters" aria-label="歌單篩選">
     <div class="search-tools">
@@ -451,6 +463,7 @@
 <script id="playlist-message-data" type="application/json">""</script>
 <script id="playlist-message-two-data" type="application/json">""</script>
 <script id="marquee-style-data" type="application/json">{"height":"medium","size":"medium","font":"sans"}</script>
+<script id="daily-picks-data" type="application/json">null</script>
 <script id="language-visibility-data" type="application/json">[]</script>
 <script type="module">
 const $ = (id) => document.getElementById(id);
@@ -852,6 +865,23 @@ function renderMarqueeStyle(style) {
   dataset.font = style.font;
 }
 renderMarqueeStyle(JSON.parse($("marquee-style-data").textContent));
+function renderDailyPicks(board) {
+  const display = Array.isArray(board?.picks) && board.picks.length === 5;
+  $("daily-picks").hidden = !display;
+  if (!display) return;
+  const date = new Date(board.updatedAt);
+  const format = new Intl.DateTimeFormat("zh-TW", { dateStyle: "medium", timeZone: "Asia/Taipei" });
+  $("daily-picks-date").dateTime = date.toISOString();
+  $("daily-picks-date").textContent = format.format(date);
+  $("daily-picks-list").replaceChildren(...board.picks.map((song) => {
+    const item = element("li", undefined, "card");
+    const title = element("div", undefined, "song-title-row");
+    title.append(element("strong", song.title), copySongTitle(song));
+    item.append(title, element("p", song.artist));
+    return item;
+  }));
+}
+renderDailyPicks(JSON.parse($("daily-picks-data").textContent));
 
 updateOptions();
 renderAnnouncements();
@@ -865,10 +895,11 @@ async function loadLatestSongs() {
       signal: AbortSignal.timeout(4500),
     });
     if (!response.ok) return;
-    const { songs: latest, announcements: notice, message, messageTwo, marqueeStyle, hiddenLanguages: settings } = await response.json();
+    const { songs: latest, announcements: notice, message, messageTwo, marqueeStyle, dailyPicks, hiddenLanguages: settings } = await response.json();
     if (typeof message === "string") renderMarquee(message);
     if (typeof messageTwo === "string") renderMarquee(messageTwo, "-two");
     if (marqueeStyle) renderMarqueeStyle(marqueeStyle);
+    if (dailyPicks !== undefined) renderDailyPicks(dailyPicks);
     if (!Array.isArray(latest) || !latest.every((song) => song &&
       Number.isSafeInteger(song.id) && typeof song.title === "string" &&
       typeof song.artist === "string") ||
