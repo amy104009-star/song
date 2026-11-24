@@ -38,7 +38,40 @@
   .marquee-window { flex: 1; min-width: 0; overflow: hidden; }
   .marquee-text { width: max-content; padding-inline-start: 100%; white-space: nowrap; font-weight: 650; animation: playlist-scroll var(--scroll-time, 20s) linear infinite; }
   @keyframes playlist-scroll { to { transform: translateX(-100%); } }
+  #playlist-marquee { position: relative; isolation: isolate; overflow: hidden; }
+  #playlist-marquee::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 55%, #fff9dc 0%, transparent 68%),
+      repeating-conic-gradient(from 18deg at 50% 55%, #e2ac46 0 9deg, transparent 12deg 27deg);
+    opacity: 0;
+    animation: marquee-radiance 12s ease-in-out infinite;
+  }
+  #playlist-marquee .marquee-window { position: relative; }
+  #marquee-text {
+    animation: playlist-scroll var(--scroll-time, 20s) linear infinite,
+      marquee-float 6s ease-in-out infinite, marquee-fade 12s ease-in-out infinite;
+  }
+  @keyframes marquee-radiance {
+    0%, 26%, 67%, 100% { opacity: .04; transform: scale(.94); }
+    40%, 58% { opacity: .23; transform: scale(1.12); }
+    49% { opacity: .12; transform: scale(1.04); }
+  }
+  @keyframes marquee-float {
+    0%, 100% { translate: 0 0; }
+    25% { translate: 0 -3px; }
+    75% { translate: 0 3px; }
+  }
+  @keyframes marquee-fade {
+    0%, 100% { opacity: 1; }
+    22%, 78% { opacity: .68; }
+    48%, 56% { opacity: 1; }
+  }
   @media (prefers-reduced-motion: reduce) {
+    #playlist-marquee::before, #marquee-text { animation: none; }
     .marquee-text { animation: none; padding-inline-start: 0; width: auto; white-space: normal; overflow-wrap: anywhere; }
   }
   .announcements { margin-bottom: 1.4rem; padding: .9rem; border: 1px solid #e3ba6b; border-radius: 1rem; background: #fff4cbe8; }
