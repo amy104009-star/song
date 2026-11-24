@@ -10,6 +10,9 @@ if (!template.includes("<title>北村歌單</title>")) {
 if (!template.includes('href="https://lili-songbook.easyarena3.chatgpt.site/requests"')) {
   throw new Error("The public playlist is missing the saved-request lookup link");
 }
+if (!template.includes('href="https://lili-songbook.easyarena3.chatgpt.site/mailbox"')) {
+  throw new Error("The public playlist is missing the song mailbox link");
+}
 if (!template.includes('<details id="artist-directory"')) {
   throw new Error("The public playlist is missing the collapsible artist list");
 }
