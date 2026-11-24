@@ -1,9 +1,9 @@
-name: Deploy playlist to GitHub Pages
+name: Sync public playlist to GitHub Pages
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
 
 permissions:
   contents: read
@@ -15,24 +15,30 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  publish:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: public-playlist
+          path: public-template
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run check
-      - run: pnpm run build
+          node-version: '22'
+      - name: Build the current songbook
+        id: snapshot
+        run: node .github/scripts/sync-playlist.mjs
       - uses: actions/configure-pages@v5
+        if: steps.snapshot.outputs.publish == 'true'
       - uses: actions/upload-pages-artifact@v4
+        if: steps.snapshot.outputs.publish == 'true'
         with:
-          path: dist/public
+          path: site-dist
       - uses: actions/deploy-pages@v4
+        if: steps.snapshot.outputs.publish == 'true'
         id: deploy
