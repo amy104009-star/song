@@ -171,18 +171,86 @@
   }
   main { width: min(100% - 2rem, 68rem); padding-top: clamp(1rem, 4vw, 2.75rem); }
   .playlist-header {
+    position: relative;
     display: grid;
     justify-items: center;
-    gap: .85rem;
+    gap: clamp(.8rem, 2vw, 1.2rem);
     isolation: isolate;
-    padding: clamp(1.35rem, 5vw, 2.5rem) 1rem;
-    border: 1px solid #fff7dacc;
+    overflow: hidden;
+    padding: clamp(1.8rem, 6vw, 3.7rem) .65rem clamp(1.4rem, 4vw, 2.5rem);
+    border: 1px solid #fff3c8;
     border-radius: 1.75rem;
-    background: linear-gradient(142deg, #fff8dcf2 10%, #ffe5a4e6);
-    box-shadow: var(--panel-shadow);
+    background:
+      radial-gradient(ellipse at 20% 10%, #fff9df 0%, transparent 52%),
+      radial-gradient(ellipse at 83% 85%, #f7bd67a8 0%, transparent 56%),
+      linear-gradient(132deg, #ffeebce8, #ffdc9ae3 62%, #ffcf91ed);
+    box-shadow: 0 15px 44px #58270d26, inset 0 0 28px #fff8d2a0;
   }
-  .playlist-header h1 { margin: 0; line-height: 1.15; font-weight: 850; letter-spacing: .04em; }
-  .playlist-header h1 span { font-size: .75em; vertical-align: .06em; letter-spacing: 0; }
+  .playlist-header::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: .55rem;
+    pointer-events: none;
+    border: 1px solid #b582455c;
+    border-radius: inherit;
+    background:
+      radial-gradient(circle at 8% 28%, #fffef0 0 2px, transparent 4px),
+      radial-gradient(circle at 16% 72%, #fff5cf 0 3px, transparent 6px),
+      radial-gradient(circle at 27% 21%, #fff 0 2px, transparent 4px),
+      radial-gradient(circle at 74% 70%, #fff9de 0 2px, transparent 5px),
+      radial-gradient(circle at 86% 25%, #fffef4 0 3px, transparent 6px),
+      radial-gradient(circle at 94% 62%, #fff7d1 0 2px, transparent 4px);
+  }
+  .playlist-title {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0,1fr) auto;
+    align-items: center;
+    column-gap: clamp(.4rem,2.4vw,1.35rem);
+    max-width: 100%;
+    padding: 0 .1rem .9rem;
+  }
+  .playlist-title::after {
+    content: "";
+    position: absolute;
+    inset-inline: 26%;
+    bottom: .15rem;
+    height: 2px;
+    background: linear-gradient(90deg,transparent,#ac682b,transparent);
+  }
+  .playlist-header h1 {
+    margin: 0;
+    font-family: "Noto Serif TC", "Songti TC", "Microsoft JhengHei", serif;
+    font-size: clamp(1.85rem, 7.5vw, 5rem);
+    line-height: 1.12;
+    font-weight: 900;
+    letter-spacing: .06em;
+    color: #683214;
+    text-wrap: nowrap;
+  }
+  @supports (-webkit-background-clip: text) {
+    .playlist-header h1 {
+      background: linear-gradient(175deg,#4e250e 12%,#794119 52%,#a95322 96%);
+      -webkit-background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 2px 0 #fff8d1);
+    }
+  }
+  .title-emblem {
+    display: grid;
+    place-items: center;
+    width: clamp(2.2rem,8vw,4.5rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid #fff8d8;
+    background: radial-gradient(circle at 30% 23%,#fffdf0,#ffdfa0 72%);
+    box-shadow: 0 5px 13px #8247182e, inset 0 0 0 3px #fff5c7a8;
+    font-size: clamp(1.15rem,4.2vw,2.35rem);
+    line-height: 1;
+  }
+  .title-moon { transform: rotate(-12deg) translateY(-.12rem); }
+  .title-bear { transform: rotate(10deg) translateY(.12rem); }
   #open-draw { min-height: 3.15rem; padding-inline: 1.45rem; color: #482b11; border-color: #cf952e; background: linear-gradient(180deg,#ffe28a,#ffd05e); }
   #open-draw:hover { background: #ffdc7b; }
   .playlist-marquee, .announcements, .song-filters, .library-heading {
@@ -235,7 +303,11 @@
 <div id="floating-background" class="bubbles-container" aria-hidden="true"></div>
 <main>
   <header class="playlist-header">
-    <h1><span aria-hidden="true">🌙</span> 北村歌單 <span aria-hidden="true">🧸</span></h1>
+    <div class="playlist-title">
+      <span class="title-emblem title-moon" aria-hidden="true">🌙</span>
+      <h1>北村歌單</h1>
+      <span class="title-emblem title-bear" aria-hidden="true">🧸</span>
+    </div>
     <div class="actions">
       <button id="open-draw" class="primary">🎲 隨機選歌</button>
     </div>
