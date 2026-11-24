@@ -59,6 +59,12 @@
   .dialog-heading { padding: 1rem; background: #ffe596; }
   .dialog-body { display: grid; gap: .85rem; padding: 1rem; }
   #draw-result { background: #fff1bc; border-radius: .85rem; padding: 1rem; text-align: center; overflow-wrap: anywhere; }
+  #draw-preview { min-height: 6rem; padding: 1rem; border-radius: .85rem; background: #fff1bc; text-align: center; overflow-wrap: anywhere; }
+  #draw-preview-title { display: block; margin-top: .35rem; animation: shuffle-pulse .16s ease-in-out infinite alternate; }
+  @keyframes shuffle-pulse { from { opacity: .55; transform: translateY(3px); } to { opacity: 1; transform: translateY(-2px); } }
+  #draw-result.reveal { animation: draw-reveal .25s ease-out; }
+  @keyframes draw-reveal { from { opacity: .45; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { #draw-result.reveal, #draw-preview-title { animation: none; } }
   .draw-history { padding: .65rem .8rem; border: 1px solid #e3ba6b; border-radius: .75rem; }
   .draw-history summary { cursor: pointer; font-weight: 650; }
   .draw-history summary:focus-visible { outline: 3px solid #966514; outline-offset: 3px; }
@@ -174,6 +180,10 @@
   <h2 id="draw-heading" class="dialog-heading">🎲 隨機選歌</h2>
   <div class="dialog-body">
     <label>抽選範圍<select id="scope"></select></label>
+    <div id="draw-preview" hidden>
+      <p role="status">抽選中…</p>
+      <strong id="draw-preview-title" aria-hidden="true"></strong>
+    </div>
     <div aria-live="polite" aria-atomic="true">
       <div id="draw-result"></div>
       <p id="remaining"></p>
@@ -232,6 +242,7 @@ function titleLength(title) {
 const seed = JSON.parse($("seed").textContent);
 const history = new Map();
 const drawLog = [];
+let drawFrame = 0;
 let songs = seed;
 let announcements = JSON.parse($("announcement-data").textContent);
 const announcementDays = 30 * 24 * 60 * 60 * 1000;
@@ -338,6 +349,7 @@ function renderDraw() {
   $("draw-button").disabled = pool().length === 0;
   $("reset-draw").disabled = drawLog.length === 0;
   const panel = $("draw-result");
+  panel.classList.remove("reveal");
   panel.replaceChildren();
   if (result) {
     panel.append(element("h2", result.song.title), element("p", result.song.artist),
@@ -362,26 +374,73 @@ $("reset-draw").addEventListener("click", () => {
   result = null;
   renderDraw();
 });
+function stopDrawAnimation() {
+  if (!drawFrame) return;
+  cancelAnimationFrame(drawFrame);
+  drawFrame = 0;
+  $("draw-preview").hidden = true;
+  $("scope").disabled = false;
+  renderDraw();
+}
+
+$("draw").addEventListener("close", stopDrawAnimation);
 $("draw-button").addEventListener("click", () => {
+  if (drawFrame) return;
   const scope = $("scope").value;
   const all = pool();
   if (!all.length) return;
-  let drawn = history.get(scope) ?? new Set();
-  let remaining = all.filter((song) => !drawn.has(song.id));
-  const newRound = remaining.length === 0;
-  if (newRound) {
-    drawn = new Set();
-    remaining = all;
+  const previous = history.get(scope);
+  const unseen = all.filter((song) => !previous?.has(song.id));
+  const newRound = unseen.length === 0;
+  const candidates = newRound ? all : unseen;
+  const song = candidates[Math.floor(Math.random() * candidates.length)];
+
+  function finish() {
+    const drawn = newRound ? new Set() : previous ?? new Set();
+    drawn.add(song.id);
+    history.set(scope, drawn);
+    result = { song, newRound };
+    drawLog.push(song);
+    $("draw-history-count").textContent = `（${drawLog.length}）`;
+    $("draw-history-empty").hidden = true;
+    $("draw-history-list").prepend(element("li", `${song.title} — ${song.artist}`));
+    renderDraw();
+    $("draw-result").classList.add("reveal");
   }
-  const song = remaining[Math.floor(Math.random() * remaining.length)];
-  drawn.add(song.id);
-  history.set(scope, drawn);
-  result = { song, newRound };
-  drawLog.push(song);
-  $("draw-history-count").textContent = `（${drawLog.length}）`;
-  $("draw-history-empty").hidden = true;
-  $("draw-history-list").prepend(element("li", `${song.title} — ${song.artist}`));
-  renderDraw();
+
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    finish();
+    return;
+  }
+
+  $("draw-button").textContent = "抽選中…";
+  $("draw-button").disabled = true;
+  $("reset-draw").disabled = true;
+  $("scope").disabled = true;
+  $("draw-result").replaceChildren();
+  $("draw-preview").hidden = false;
+  const started = performance.now();
+  let lastChange = -100;
+  function shuffle(now) {
+    if (!$("draw").open) {
+      stopDrawAnimation();
+      return;
+    }
+    const elapsed = now - started;
+    if (elapsed >= 850) {
+      stopDrawAnimation();
+      finish();
+      return;
+    }
+    if (elapsed - lastChange >= 75 + elapsed / 9) {
+      lastChange = elapsed;
+      const preview = candidates[Math.floor(Math.random() * candidates.length)];
+      $("draw-preview-title").textContent = preview.title;
+    }
+    drawFrame = requestAnimationFrame(shuffle);
+  }
+  $("draw-preview-title").textContent = candidates[0].title;
+  drawFrame = requestAnimationFrame(shuffle);
 });
 updateOptions();
 renderAnnouncements();
@@ -407,6 +466,7 @@ async function loadLatestSongs() {
       renderAnnouncements();
       return;
     }
+    stopDrawAnimation();
     songs = latest;
     history.clear();
     result = null;
