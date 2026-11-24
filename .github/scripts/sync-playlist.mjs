@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile, appendFile } from "node:fs/promises";
 
+const languages = new Set(["中文", "台語", "粵語", "英文", "韓文", "日文", "越南文"]);
 const seedPattern = /(<script id="seed" type="application\/json">)([\s\S]*?)(<\/script>)/;
 const template = await readFile("public-template/index.html", "utf8");
 if (!template.includes("<title>北村歌單</title>")) {
@@ -23,7 +24,8 @@ const { songs, revision, announcements } = await response.json();
 if (!Number.isSafeInteger(revision) || revision < 0 || !Array.isArray(songs) ||
   songs.length > 2000 || !songs.every((song) => song &&
     Number.isSafeInteger(song.id) && song.id > 0 &&
-    typeof song.title === "string" && typeof song.artist === "string") ||
+    typeof song.title === "string" && typeof song.artist === "string" &&
+    (song.language === undefined || languages.has(song.language))) ||
   new Set(songs.map((song) => song.id)).size !== songs.length) {
   throw new Error("The published playlist endpoint returned unexpected data");
 }
