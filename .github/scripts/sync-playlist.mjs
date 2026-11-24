@@ -26,7 +26,7 @@ const response = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/
   signal: AbortSignal.timeout(20000),
 });
 if (!response.ok) throw new Error(`Playlist request failed: ${response.status}`);
-const { songs, revision, announcements } = await response.json();
+const { songs, revision, announcements, message = "" } = await response.json();
 if (!Number.isSafeInteger(revision) || revision < 0 || !Array.isArray(songs) ||
   songs.length > 2000 || !songs.every((song) => song &&
     Number.isSafeInteger(song.id) && song.id > 0 &&
@@ -47,7 +47,12 @@ const notice = JSON.stringify({ lastAddedAt: announcements.lastAddedAt, ids: ann
 if (!template.includes("function titleLength(title)") || !template.includes("function isEnglishTitle(title)")) {
   throw new Error("The public playlist is missing the title length and English song grouping");
 }
-const page = template
+const messagePattern = /(<script id="playlist-message-data" type="application\/json">)[\s\S]*?(<\/script>)/;
+if (!messagePattern.test(template) || typeof message !== "string" || message.length > 300) {
+  throw new Error("Playlist message is missing or invalid");
+}
+const messageData = JSON.stringify(message).replaceAll("<", "\\u003c");
+const page = template.replace(messagePattern, (_, start, end) => start + messageData + end)
   .replace(seedPattern, (_, start, __, end) => start + seed + end)
   .replace(announcementPattern, (_, start, end) => start + notice + end);
 
