@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile, appendFile } from "node:fs/promises";
 
 const seedPattern = /(<script id="seed" type="application\/json">)([\s\S]*?)(<\/script>)/;
 const template = await readFile("public-template/index.html", "utf8");
+const background = await readFile("public-template/playlist-background.jpg");
 if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
   throw new Error("The public template is missing the new songs announcement board");
 }
@@ -36,7 +37,12 @@ if (process.env.GITHUB_EVENT_NAME === "schedule") {
     const publicPage = await fetch("https://amy104009-star.github.io/song/", {
       signal: AbortSignal.timeout(10000),
     });
-    unchanged = publicPage.ok && (await publicPage.text()).trim() === page.trim();
+    if (publicPage.ok && (await publicPage.text()).trim() === page.trim()) {
+      const publicBackground = await fetch("https://amy104009-star.github.io/song/playlist-background.jpg", {
+        signal: AbortSignal.timeout(10000),
+      });
+      unchanged = publicBackground.ok && Buffer.from(await publicBackground.arrayBuffer()).equals(background);
+    }
   } catch {
     // If the comparison is unavailable, publish the validated snapshot.
   }
@@ -47,5 +53,6 @@ if (process.env.GITHUB_OUTPUT) {
 if (!unchanged) {
   await mkdir("site-dist", { recursive: true });
   await writeFile("site-dist/index.html", page);
+  await writeFile("site-dist/playlist-background.jpg", background);
 }
 console.log(`${songs.length} songs from revision ${revision}${unchanged ? " (unchanged)" : ""}`);
