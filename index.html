@@ -318,9 +318,17 @@
     .radio-filters { gap: .8rem; }
     .artist-select select { flex: 1; min-width: 7rem; }
   }
+  .site-sidebar { position: fixed; inset: .75rem auto auto .75rem; z-index: 20; color: #422e18; }
+  .site-sidebar summary { cursor: pointer; width: fit-content; padding: .45rem .7rem; border: 1px solid #d7b66c; border-radius: .7rem; background: #fff8df; font-weight: 650; }
+  .site-sidebar nav { margin-top: .4rem; border: 1px solid #d7b66c; border-radius: .8rem; background: #fff8df; box-shadow: 0 .4rem 1.5rem #452b2226; }
+  .site-sidebar a { display: block; padding: .75rem 1.2rem; color: inherit; }
 </style>
 </head>
 <body>
+<details class="site-sidebar">
+  <summary>☰ 選單</summary>
+  <nav aria-label="側邊選單"><a href="https://lili-songbook.easyarena3.chatgpt.site/requests">存單查詢</a></nav>
+</details>
 <div class="photo-background" aria-hidden="true"></div>
 <div id="floating-background" class="bubbles-container" aria-hidden="true"></div>
 <main>
