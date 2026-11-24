@@ -33,8 +33,8 @@ if (!announcementPattern.test(template) || !announcements ||
   throw new Error("Announcement metadata is missing or invalid");
 }
 const notice = JSON.stringify({ lastAddedAt: announcements.lastAddedAt, ids: announcements.ids });
-if (!template.includes("function titleLength(title)")) {
-  throw new Error("The public playlist is missing the title length grouping");
+if (!template.includes("function titleLength(title)") || !template.includes("function isEnglishTitle(title)")) {
+  throw new Error("The public playlist is missing the title length and English song grouping");
 }
 const page = template
   .replace(seedPattern, (_, start, __, end) => start + seed + end)
