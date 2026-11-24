@@ -26,6 +26,7 @@ if (!template.includes(".playlist-header::before,") || !template.includes("cente
   throw new Error("The public playlist is missing its header photo");
 }
 const background = await readFile("public-template/playlist-background.jpg");
+const pageBackground = await readFile("public-template/playlist-page-background.jpg");
 if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
   throw new Error("The public template is missing the new songs announcement board");
 }
@@ -74,7 +75,12 @@ if (process.env.GITHUB_EVENT_NAME === "schedule") {
       const publicBackground = await fetch("https://amy104009-star.github.io/song/playlist-background.jpg", {
         signal: AbortSignal.timeout(10000),
       });
-      unchanged = publicBackground.ok && Buffer.from(await publicBackground.arrayBuffer()).equals(background);
+      const publicPageBackground = await fetch("https://amy104009-star.github.io/song/playlist-page-background.jpg", {
+        signal: AbortSignal.timeout(10000),
+      });
+      unchanged = publicBackground.ok && publicPageBackground.ok &&
+        Buffer.from(await publicBackground.arrayBuffer()).equals(background) &&
+        Buffer.from(await publicPageBackground.arrayBuffer()).equals(pageBackground);
     }
   } catch {
     // If the comparison is unavailable, publish the validated snapshot.
@@ -87,5 +93,6 @@ if (!unchanged) {
   await mkdir("site-dist", { recursive: true });
   await writeFile("site-dist/index.html", page);
   await writeFile("site-dist/playlist-background.jpg", background);
+  await writeFile("site-dist/playlist-page-background.jpg", pageBackground);
 }
 console.log(`${songs.length} songs from revision ${revision}${unchanged ? " (unchanged)" : ""}`);
