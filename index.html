@@ -177,9 +177,9 @@
     isolation: isolate;
     overflow: hidden;
     min-height: clamp(14.8rem, 29vw, 19rem);
-    align-content: center;
-    gap: 1.65rem;
-    padding: clamp(2rem, 7vw, 4rem) 1rem;
+    align-content: space-between;
+    gap: 1rem;
+    padding: clamp(.8rem, 2.5vw, 1.5rem) 1rem clamp(.85rem, 3vw, 1.65rem);
     border: 1px solid #fff8ee;
     border-radius: 1.65rem;
     background: #48433d;
@@ -199,13 +199,12 @@
   .playlist-header::after {
     z-index: -1;
     inset: 0;
-    background: linear-gradient(180deg, transparent 10%, #21191116 42%, #21191155);
+    background: linear-gradient(180deg, #21191150, transparent 38%, transparent 64%, #21191155);
   }
   @media (max-width: 37rem) {
     .playlist-header::before { background-position: center 26%; }
   }
   .playlist-title { display: grid; justify-items: center; gap: .65rem; }
-  .title-emblem { color: #fff; text-shadow: 0 2px 8px #211a16; font-family: Georgia, serif; font-size: 1.2rem; letter-spacing: .65em; margin-inline-start: .65em; }
   .playlist-header h1 {
     margin: 0;
     color: #fff;
@@ -310,7 +309,6 @@
 <main>
   <header class="playlist-header">
     <div class="playlist-title">
-      <span class="title-emblem" aria-hidden="true">☾ ✧</span>
       <h1>北村<span>歌單</span></h1>
     </div>
     <div class="actions">
