@@ -199,6 +199,18 @@ $("floating-background").append(...floatingItems);
 
 const titleSegmenter = typeof Intl.Segmenter === "function" ? new Intl.Segmenter("zh-Hant") : null;
 
+const englishGroup = "english";
+
+function isEnglishTitle(title) {
+  const letters = title.match(/\p{L}/gu);
+  return Boolean(letters?.length && letters.every((letter) => /\p{Script=Latin}/u.test(letter)));
+}
+
+function groupOrder(group) {
+  if (group === englishGroup) return Number.MAX_SAFE_INTEGER;
+  return group || Infinity;
+}
+
 function titleLength(title) {
   const characters = titleSegmenter
     ? Array.from(titleSegmenter.segment(title), ({ segment }) => segment)
@@ -284,14 +296,14 @@ function renderSongs() {
   $("count").textContent = visible.length ? `共 ${visible.length} 首歌` : "找不到歌曲";
   const groups = new Map();
   for (const song of visible) {
-    const length = titleLength(song.title);
-    if (!groups.has(length)) groups.set(length, []);
-    groups.get(length).push(song);
+    const group = isEnglishTitle(song.title) ? englishGroup : titleLength(song.title);
+    if (!groups.has(group)) groups.set(group, []);
+    groups.get(group).push(song);
   }
-  const sections = [...groups.entries()].sort(([a], [b]) => (a || Infinity) - (b || Infinity));
-  $("songs").replaceChildren(...sections.map(([length, entries]) => {
+  const sections = [...groups.entries()].sort(([a], [b]) => groupOrder(a) - groupOrder(b));
+  $("songs").replaceChildren(...sections.map(([group, entries]) => {
     const section = element("section", undefined, "song-group");
-    const heading = element("h2", length ? `${length} 字` : "其他");
+    const heading = element("h2", group === englishGroup ? "英文歌名" : group ? `${group} 字` : "其他");
     const cards = element("ul", undefined, "cards");
     cards.append(...entries.map((song) => {
       const item = element("li", undefined, "card");
