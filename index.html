@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>璃璃歌單</title>
+<style>
+  :root { color-scheme: light; font-family: system-ui, sans-serif; color: #56350e; background: #fff5cd; }
+  * { box-sizing: border-box; }
+  body { min-height: 100vh; margin: 0; background: linear-gradient(135deg, #fff8dc, #fffacd 50%, #ffe4b5); }
+  main { position: relative; width: min(100% - 2rem, 66rem); margin: auto; padding: 2rem 0 3rem; }
+  header { text-align: center; margin-bottom: 1.5rem; }
+  h1 { font-size: clamp(2rem, 8vw, 3.5rem); margin: .2em 0 .4em; }
+  h2, p { margin: 0; }
+  label { display: grid; gap: .35rem; font-weight: 650; min-width: 0; }
+  button, input, select, textarea { font: inherit; color: inherit; min-height: 2.75rem; padding: .55rem .8rem; border: 1px solid #e3ba6b; border-radius: .75rem; background: #fffdf4; }
+  input, select, textarea { width: 100%; }
+  textarea { resize: vertical; }
+  button { font-weight: 650; cursor: pointer; }
+  button:hover { background: #fff1b8; }
+  button:disabled { opacity: .45; cursor: default; }
+  a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #966514; outline-offset: 2px; }
+  .primary { background: #ffda72; border-color: #dbad40; }
+  .primary:hover { background: #ffd259; }
+  #open-draw { font-size: 1.15rem; padding-inline: 1.25rem; border-radius: 1rem; box-shadow: 0 .3rem 1rem #92561026; }
+  .actions, .filters { display: flex; flex-wrap: wrap; gap: .65rem; align-items: end; }
+  header .actions { justify-content: center; }
+  .filters > label { flex: 1 1 13rem; }
+  .count { margin: .8rem 0; }
+  .artist-buttons { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1rem; }
+  .artist-buttons button { border-radius: 999px; overflow-wrap: anywhere; max-width: 100%; }
+  .artist-buttons button[aria-pressed="true"] { background: #ffda72; border-color: #a36d20; }
+  ul { list-style: none; padding: 0; margin: 0; }
+  .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
+  @media (min-width: 56rem) { .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .card { background: #fffdf7; border: 1px solid #f0d48e; border-radius: .85rem; padding: .75rem; min-width: 0; overflow-wrap: anywhere; }
+  .card p, small { color: #735018; }
+  dialog { width: min(100% - 2rem, 34rem); max-height: calc(100dvh - 2rem); border: 1px solid #e3ba6b; border-radius: 1rem; padding: 0; background: #fffdf4; color: inherit; box-shadow: 0 1rem 3rem #4c2a2039; }
+  dialog::backdrop { background: #35250c70; }
+  .dialog-heading { padding: 1rem; background: #ffe596; }
+  .dialog-body { display: grid; gap: .85rem; padding: 1rem; }
+  #draw-result { background: #fff1bc; border-radius: .85rem; padding: 1rem; text-align: center; overflow-wrap: anywhere; }
+  #draw-result:empty, [hidden] { display: none !important; }
+  #admin-list { display: grid; gap: .5rem; max-height: min(35vh, 21rem); overflow: auto; }
+  #admin-list li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; }
+  #admin-list li > div { min-width: 0; overflow-wrap: anywhere; }
+  .status { color: #684710; }
+  .bubbles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Bubble element */
+  .bubble {
+    position: fixed;
+    bottom: -50px;
+    opacity: 0.8;
+  }
+
+  /* Float up animation - straight up */
+  @keyframes floatUp {
+    0% {
+      transform: translateY(0) translateX(0);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(-100vh) translateX(0);
+      opacity: 0;
+    }
+  }
+
+  /* Float up with sway - up with left-right movement */
+  @keyframes floatUpSway {
+    0% {
+      transform: translateY(0) translateX(0) rotate(0deg);
+      opacity: 0.8;
+    }
+    25% {
+      transform: translateY(-25vh) translateX(30px) rotate(90deg);
+      opacity: 0.8;
+    }
+    50% {
+      transform: translateY(-50vh) translateX(-20px) rotate(180deg);
+      opacity: 0.8;
+    }
+    75% {
+      transform: translateY(-75vh) translateX(25px) rotate(270deg);
+      opacity: 0.4;
+    }
+    100% {
+      transform: translateY(-100vh) translateX(0) rotate(360deg);
+      opacity: 0;
+    }
+  }
+
+  /* Float up left - up and to the left */
+  @keyframes floatUpLeft {
+    0% {
+      transform: translateY(0) translateX(0) rotate(0deg);
+      opacity: 0.8;
+    }
+    50% {
+      transform: translateY(-50vh) translateX(-40px) rotate(180deg);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(-100vh) translateX(-80px) rotate(360deg);
+      opacity: 0;
+    }
+  }
+
+  .cards .card { background: #fffdf7bb; }
+  @media (prefers-reduced-motion: reduce) {
+    .bubbles-container { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="floating-background" class="bubbles-container" aria-hidden="true"></div>
+<main>
+  <header>
+    <h1>🌙 璃璃歌單 🧸</h1>
+    <div class="actions">
+      <button id="open-draw" class="primary">🎲 隨機選歌</button>
+    </div>
+  </header>
+  <div class="filters">
+    <label>搜尋歌曲或歌手<input id="search" type="search" placeholder="輸入歌名或歌手"></label>
+    <label>歌手分類<select id="artist"></select></label>
+  </div>
+  <div class="artist-buttons" id="artist-buttons" role="group" aria-label="快速選擇歌手"></div>
+  <p class="count" id="count" aria-live="polite"></p>
+  <ul class="cards" id="songs"></ul>
+</main>
+<dialog id="draw" aria-labelledby="draw-heading">
+  <h2 id="draw-heading" class="dialog-heading">🎲 隨機選歌</h2>
+  <div class="dialog-body">
+    <label>抽選範圍<select id="scope"></select></label>
+    <div aria-live="polite" aria-atomic="true">
+      <div id="draw-result"></div>
+      <p id="remaining"></p>
+    </div>
+    <div class="actions">
+      <button class="primary" id="draw-button">抽一首</button>
+      <button id="reset-draw">清除抽歌紀錄</button>
+      <button data-close="draw">關閉</button>
+    </div>
+  </div>
+</dialog>
+<script id="seed" type="application/json">[{"id":1,"title":"來遲","artist":"戴羽彤"},{"id":2,"title":"我認","artist":"戴羽彤"},{"id":3,"title":"指紋","artist":"杜宣達"},{"id":4,"title":"慢冷","artist":"梁靜茹"},{"id":5,"title":"卜卦","artist":"崔子格"},{"id":6,"title":"沉溺","artist":"邱振哲"},{"id":7,"title":"愛你","artist":"王心凌 / 陳芳語"},{"id":8,"title":"旋木","artist":"王菲"},{"id":9,"title":"寧夏","artist":"梁靜茹"},{"id":10,"title":"小半","artist":"陳粒"},{"id":11,"title":"忘了","artist":"周林楓"},{"id":12,"title":"偏愛","artist":"張芸京"},{"id":13,"title":"天下","artist":"張杰"},{"id":14,"title":"觸電","artist":"芭比"},{"id":15,"title":"涼涼","artist":"楊宗緯 & 張碧晨"},{"id":16,"title":"問風","artist":"金漁"},{"id":17,"title":"年輪","artist":"張碧晨"},{"id":18,"title":"春泥","artist":"庾澄慶"},{"id":19,"title":"訣愛","artist":"詹雯婷"},{"id":20,"title":"下山","artist":"要不要買菜"},{"id":21,"title":"傻瓜","artist":"溫嵐"},{"id":22,"title":"麒麟","artist":"早安"},{"id":23,"title":"放生","artist":"范逸臣"},{"id":24,"title":"側臉","artist":"于果"},{"id":25,"title":"不如","artist":"秦海清"},{"id":26,"title":"不懂","artist":"張信哲"},{"id":27,"title":"仗著","artist":"陳壹千"},{"id":28,"title":"預謀","artist":"許佳慧"},{"id":29,"title":"妥協","artist":"蔡依林"},{"id":30,"title":"舞孃","artist":"蔡依林"},{"id":31,"title":"黃昏","artist":"周傳雄"},{"id":32,"title":"雨蝶","artist":"李翊君"},{"id":33,"title":"天使","artist":"五月天"},{"id":34,"title":"人是","artist":"周深"},{"id":35,"title":"倒帶","artist":"蔡依林"},{"id":36,"title":"紅豆","artist":"王菲"},{"id":37,"title":"如願","artist":"王菲"},{"id":38,"title":"淪陷","artist":"王靖雯不胖"},{"id":39,"title":"雨愛","artist":"楊丞琳"},{"id":40,"title":"毒藥","artist":"蕭秉治/周星星"},{"id":41,"title":"泡沫","artist":"鄧紫棋"},{"id":42,"title":"唯一","artist":"告五人"},{"id":43,"title":"人質","artist":"張惠妹"},{"id":44,"title":"擱淺","artist":"周杰倫"},{"id":45,"title":"愛錯","artist":"王力宏"},{"id":46,"title":"嘉賓","artist":"張遠"},{"id":47,"title":"綠色","artist":"陳雪凝"},{"id":48,"title":"過客","artist":"阿涵"},{"id":49,"title":"體面","artist":"于文文"},{"id":50,"title":"阿嬤","artist":"周林楓"},{"id":51,"title":"塵埃","artist":"家家"},{"id":52,"title":"招娣","artist":"周林楓"},{"id":53,"title":"落海","artist":"任然"},{"id":54,"title":"暖暖","artist":"梁靜茹"},{"id":55,"title":"心牆","artist":"郭靜"},{"id":56,"title":"曹操","artist":"林俊傑"},{"id":57,"title":"凝眸","artist":"王心凌"},{"id":58,"title":"演員","artist":"薛之謙"},{"id":59,"title":"晴天","artist":"周杰倫"},{"id":60,"title":"你走","artist":"鬆緊先生"},{"id":61,"title":"江南","artist":"林俊傑"},{"id":62,"title":"恆溫","artist":"孫盛希"},{"id":63,"title":"善變","artist":"王靖雯不胖"},{"id":64,"title":"命運","artist":"家家"},{"id":65,"title":"莫等","artist":"買辣椒也用券"},{"id":66,"title":"起風了","artist":"買辣椒也用券"},{"id":67,"title":"桃花諾","artist":"鄧紫棋"},{"id":68,"title":"淒美地","artist":"郭頂"},{"id":69,"title":"喜歡你","artist":"鄧紫棋 / 陳潔儀"},{"id":70,"title":"星河嘆","artist":"黃齡"},{"id":71,"title":"下雨天","artist":"南拳媽媽"},{"id":72,"title":"青花瓷","artist":"周杰倫"},{"id":73,"title":"愛無赦","artist":"蔡依林"},{"id":74,"title":"日不落","artist":"蔡依林"},{"id":75,"title":"講真的","artist":"曾惜"},{"id":76,"title":"處處吻","artist":"楊千嬅"},{"id":77,"title":"跳樓機","artist":"LBI 利比"},{"id":78,"title":"明明就","artist":"周杰倫"},{"id":79,"title":"小幸運","artist":"田馥甄"},{"id":80,"title":"七里香","artist":"周杰倫"},{"id":81,"title":"我不配","artist":"周杰倫"},{"id":82,"title":"童話鎮","artist":"陳一發兒"},{"id":83,"title":"從前說","artist":"小阿七"},{"id":84,"title":"歐若拉","artist":"張韶涵"},{"id":85,"title":"怎麼了","artist":"周興哲"},{"id":86,"title":"伯虎說","artist":"伯爵 Johnny & 唐伯虎 Annie"},{"id":87,"title":"帶我走","artist":"楊丞琳"},{"id":88,"title":"九張機","artist":"葉炫清"},{"id":89,"title":"愛存在","artist":"王靖雯不胖"},{"id":90,"title":"千年淚","artist":"Tank"},{"id":91,"title":"紅昭願","artist":"音闕詩聽"},{"id":92,"title":"褪黑素","artist":"江皓南"},{"id":93,"title":"我知道","artist":"BY2"},{"id":94,"title":"愛上你","artist":"BY2"},{"id":95,"title":"他他他","artist":"艾辰"},{"id":96,"title":"安和橋","artist":"宋冬野"},{"id":97,"title":"那些年","artist":"胡夏"},{"id":98,"title":"聽說你","artist":"于冬然"},{"id":99,"title":"冷雨夜","artist":"Beyond"},{"id":100,"title":"字字句句","artist":"盧盧快閉嘴"},{"id":101,"title":"告白氣球","artist":"周杰倫"},{"id":102,"title":"忽而今夏","artist":"汪蘇瀧"},{"id":103,"title":"不醉不會","artist":"田馥甄"},{"id":104,"title":"失戀無罪","artist":"A-Lin"},{"id":105,"title":"光年之外","artist":"鄧紫棋"},{"id":106,"title":"修煉愛情","artist":"林俊傑"},{"id":107,"title":"你敢不敢","artist":"徐佳瑩"},{"id":108,"title":"說散就散","artist":"JC 陳詠桐"},{"id":109,"title":"愛人錯過","artist":"告五人"},{"id":110,"title":"一笑傾城","artist":"汪蘇瀧"},{"id":111,"title":"路過人間","artist":"郁可唯"},{"id":112,"title":"最後一頁","artist":"江語晨"},{"id":113,"title":"愛Y愛Y","artist":"BY2"},{"id":114,"title":"公主殿下","artist":"崔洋"},{"id":115,"title":"少一點天分","artist":"孫盛希"}]</script>
+<script type="module">
+const $ = (id) => document.getElementById(id);
+const floatAnimations = ["floatUp", "floatUpSway", "floatUpLeft"];
+const floatingItems = Array.from({ length: 25 }, (_, index) => {
+  const item = document.createElement("span");
+  item.className = "bubble";
+  item.textContent = index % 2 === 0 ? "🌙" : "🧸";
+  item.style.left = `${Math.random() * 100}%`;
+  item.style.fontSize = `${0.8 + Math.random() * 1.5}rem`;
+  const animation = floatAnimations[index % floatAnimations.length];
+  const duration = 12 + Math.random() * 11;
+  item.style.animation = `${animation} ${duration}s linear ${-Math.random() * duration}s infinite`;
+  return item;
+});
+$("floating-background").append(...floatingItems);
+
+const seed = JSON.parse($("seed").textContent);
+const history = new Map();
+let songs = seed;
+let result = null;
+
+function element(tag, content, className) {
+  const node = document.createElement(tag);
+  if (content !== undefined) node.textContent = content;
+  if (className) node.className = className;
+  return node;
+}
+
+function artists(song) {
+  return song.artist.split(/[\/,&]/).map((name) => name.trim()).filter(Boolean);
+}
+
+function matches(song, input) {
+  const query = input.value.trim().toLocaleLowerCase();
+  return [song.title, song.artist].some((value) => value.toLocaleLowerCase().includes(query));
+}
+
+function updateOptions() {
+  const names = [...new Set(songs.flatMap(artists))].sort((a, b) => a.localeCompare(b, "zh-Hant"));
+  for (const id of ["artist", "scope"]) {
+    const select = $(id);
+    const value = select.value;
+    select.replaceChildren(new Option("全部歌曲", ""), ...names.map((name) => new Option(name, name)));
+    select.value = names.includes(value) ? value : "";
+  }
+  $("artist-buttons").replaceChildren(...["", ...names].map((name) => {
+    const choice = button(name || "全部歌曲", () => {
+      $("artist").value = name;
+      renderSongs();
+    });
+    choice.dataset.artist = name;
+    return choice;
+  }));
+}
+
+function button(label, onClick) {
+  const node = element("button", label);
+  node.type = "button";
+  node.addEventListener("click", onClick);
+  return node;
+}
+
+function renderSongs() {
+  const group = $("artist").value;
+  for (const choice of $("artist-buttons").children) {
+    choice.setAttribute("aria-pressed", String(choice.dataset.artist === group));
+  }
+  const visible = songs.filter((song) =>
+    (!group || artists(song).includes(group)) && matches(song, $("search"))
+  );
+  $("count").textContent = visible.length ? `共 ${visible.length} 首歌` : "找不到歌曲";
+  $("songs").replaceChildren(...visible.map((song) => {
+    const item = element("li", undefined, "card");
+    item.append(element("strong", song.title), element("p", song.artist));
+    return item;
+  }));
+}
+
+function pool() {
+  const scope = $("scope").value;
+  return scope ? songs.filter((song) => artists(song).includes(scope)) : songs;
+}
+
+function renderDraw() {
+  const remaining = pool().length - (history.get($("scope").value)?.size ?? 0);
+  $("remaining").textContent = pool().length ? `本輪剩餘 ${remaining} / ${pool().length} 首` : "目前沒有可抽選的歌曲";
+  $("draw-button").textContent = result ? "再抽一首" : "抽一首";
+  $("draw-button").disabled = pool().length === 0;
+  $("reset-draw").disabled = history.size === 0;
+  const panel = $("draw-result");
+  panel.replaceChildren();
+  if (result) {
+    panel.append(element("h2", result.song.title), element("p", result.song.artist),
+      element("small", `分類（歌手） ${artists(result.song).join("、")}`));
+    if (result.newRound) panel.append(element("p", "已開始新一輪"));
+  }
+}
+
+$("search").addEventListener("input", renderSongs);
+$("artist").addEventListener("change", renderSongs);
+$("open-draw").addEventListener("click", () => $("draw").showModal());
+document.querySelectorAll("[data-close]").forEach((node) => {
+  node.addEventListener("click", () => $(node.dataset.close).close());
+});
+$("scope").addEventListener("change", () => { result = null; renderDraw(); });
+$("reset-draw").addEventListener("click", () => {
+  history.clear();
+  result = null;
+  renderDraw();
+});
+$("draw-button").addEventListener("click", () => {
+  const scope = $("scope").value;
+  const all = pool();
+  if (!all.length) return;
+  let drawn = history.get(scope) ?? new Set();
+  let remaining = all.filter((song) => !drawn.has(song.id));
+  const newRound = remaining.length === 0;
+  if (newRound) {
+    drawn = new Set();
+    remaining = all;
+  }
+  const song = remaining[Math.floor(Math.random() * remaining.length)];
+  drawn.add(song.id);
+  history.set(scope, drawn);
+  result = { song, newRound };
+  renderDraw();
+});
+updateOptions();
+renderSongs();
+renderDraw();
+</script>
+</body>
+</html>
