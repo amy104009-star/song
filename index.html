@@ -45,6 +45,8 @@
     min-height: clamp(3.5rem, 8vw, 4.25rem);
     padding-block: .8rem;
   }
+  #playlist-marquee[data-height="small"] { min-height: 2.75rem; padding-block: .55rem; }
+  #playlist-marquee[data-height="large"] { min-height: clamp(4.5rem, 11vw, 5.75rem); padding-block: 1rem; }
   #playlist-marquee::before, #playlist-marquee::after {
     position: absolute;
     inset: 0;
@@ -75,6 +77,11 @@
       var(--float-animation, none) 6s ease-in-out infinite,
       var(--fade-animation, none) 12s ease-in-out infinite;
   }
+  #playlist-marquee[data-size="small"] #marquee-text { font-size: 1rem; }
+  #playlist-marquee[data-size="large"] #marquee-text { font-size: clamp(1.4rem, 5vw, 1.85rem); }
+  #playlist-marquee[data-font="serif"] #marquee-text { font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif; }
+  #playlist-marquee[data-font="rounded"] #marquee-text { font-family: "Hiragino Maru Gothic ProN", "PingFang TC", "Microsoft JhengHei", ui-rounded, sans-serif; }
+  #playlist-marquee[data-font="handwritten"] #marquee-text { font-family: "Kaiti TC", "DFKai-SB", "KaiTi", cursive; }
   @keyframes marquee-twinkle {
     0%, 35%, 70%, 100% { opacity: 0; }
     18%, 54%, 85% { opacity: .72; }
@@ -438,6 +445,7 @@
 <script id="playlist-message-data" type="application/json">""</script>
 <script id="playlist-message-two-data" type="application/json">""</script>
 <script id="marquee-effects-data" type="application/json">["fade","float","rays","twinkle"]</script>
+<script id="marquee-style-data" type="application/json">{"height":"medium","size":"medium","font":"sans"}</script>
 <script id="language-visibility-data" type="application/json">[]</script>
 <script type="module">
 const $ = (id) => document.getElementById(id);
@@ -759,6 +767,13 @@ function renderMarqueeEffects(effects) {
   }
 }
 renderMarqueeEffects(JSON.parse($("marquee-effects-data").textContent));
+function renderMarqueeStyle(style) {
+  const { dataset } = $("playlist-marquee");
+  dataset.height = style.height;
+  dataset.size = style.size;
+  dataset.font = style.font;
+}
+renderMarqueeStyle(JSON.parse($("marquee-style-data").textContent));
 
 updateOptions();
 renderAnnouncements();
@@ -772,10 +787,11 @@ async function loadLatestSongs() {
       signal: AbortSignal.timeout(4500),
     });
     if (!response.ok) return;
-    const { songs: latest, announcements: notice, message, messageTwo, marqueeEffects, hiddenLanguages: settings } = await response.json();
+    const { songs: latest, announcements: notice, message, messageTwo, marqueeEffects, marqueeStyle, hiddenLanguages: settings } = await response.json();
     if (typeof message === "string") renderMarquee(message);
     if (typeof messageTwo === "string") renderMarquee(messageTwo, "-two");
     if (Array.isArray(marqueeEffects)) renderMarqueeEffects(marqueeEffects);
+    if (marqueeStyle) renderMarqueeStyle(marqueeStyle);
     if (!Array.isArray(latest) || !latest.every((song) => song &&
       Number.isSafeInteger(song.id) && typeof song.title === "string" &&
       typeof song.artist === "string") ||
