@@ -29,8 +29,8 @@ const background = await readFile("public-template/playlist-background.jpg");
 if (!/\.photo-background \{[^}]*opacity: \.3;/.test(template)) {
   throw new Error("The page backdrop must use 30% opacity");
 }
-if (!/\.photo-background \{[^}]*filter: blur\(6px\)/.test(template)) {
-  throw new Error("The page backdrop must use 6px blur");
+if (!/\.photo-background \{[^}]*filter: blur\(16px\)/.test(template)) {
+  throw new Error("The page backdrop must use 16px blur");
 }
 const pageBackground = await readFile("public-template/playlist-page-background.jpg");
 if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
