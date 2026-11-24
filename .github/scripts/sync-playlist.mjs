@@ -37,7 +37,7 @@ const response = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/
   signal: AbortSignal.timeout(20000),
 });
 if (!response.ok) throw new Error(`Playlist request failed: ${response.status}`);
-const { songs, revision, announcements, message = "", hiddenLanguages = [] } = await response.json();
+const { songs, revision, announcements, message = "", messageTwo = "", hiddenLanguages = [] } = await response.json();
 if (!Number.isSafeInteger(revision) || revision < 0 || !Array.isArray(songs) ||
   songs.length > 2000 || !songs.every((song) => song &&
     Number.isSafeInteger(song.id) && song.id > 0 &&
@@ -60,7 +60,9 @@ if (!template.includes("function titleLength(title)") || !template.includes("fun
   throw new Error("The public playlist is missing the title length and English song grouping");
 }
 const messagePattern = /(<script id="playlist-message-data" type="application\/json">)[\s\S]*?(<\/script>)/;
-if (template.includes('id="marquee-pause"') || !messagePattern.test(template) || typeof message !== "string" || message.length > 300) {
+const messageTwoPattern = /(<script id="playlist-message-two-data" type="application\/json">)[\s\S]*?(<\/script>)/;
+if (template.includes('id="marquee-pause"') || !messagePattern.test(template) || !messageTwoPattern.test(template) ||
+  [message, messageTwo].some((value) => typeof value !== "string" || value.length > 300)) {
   throw new Error("Playlist message is missing or invalid");
 }
 const visibilityPattern = /(<script id="language-visibility-data" type="application\/json">)[\s\S]*?(<\/script>)/;
@@ -69,9 +71,11 @@ if (!visibilityPattern.test(template) || !Array.isArray(hiddenLanguages) ||
   throw new Error("Playlist language visibility is invalid");
 }
 const messageData = JSON.stringify(message).replaceAll("<", "\\u003c");
+const messageTwoData = JSON.stringify(messageTwo).replaceAll("<", "\\u003c");
 const page = template
   .replace(visibilityPattern, (_, start, end) => start + JSON.stringify(hiddenLanguages) + end)
   .replace(messagePattern, (_, start, end) => start + messageData + end)
+  .replace(messageTwoPattern, (_, start, end) => start + messageTwoData + end)
   .replace(seedPattern, (_, start, __, end) => start + seed + end)
   .replace(announcementPattern, (_, start, end) => start + notice + end);
 
