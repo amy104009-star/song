@@ -52,6 +52,7 @@
   .song-groups { display: grid; gap: 1.3rem; }
   .song-group h2 { font-size: 1.1rem; margin-bottom: .5rem; }
   .card { background: #fffdf7; border: 1px solid #f0d48e; border-radius: .85rem; padding: .75rem; min-width: 0; overflow-wrap: anywhere; }
+  .song-language { display: inline-block; margin-top: .35rem; padding: .1rem .45rem; font-size: .8rem; border: 1px solid #e3ba6b; border-radius: 999px; background: #fff1bd; color: #56350e; }
   .card p, small { color: #735018; }
   dialog { width: min(100% - 2rem, 34rem); max-height: calc(100dvh - 2rem); border: 1px solid #e3ba6b; border-radius: 1rem; padding: 0; background: #fffdf4; color: inherit; box-shadow: 0 1rem 3rem #4c2a2039; }
   dialog::backdrop { background: #35250c70; }
@@ -278,6 +279,13 @@ function button(label, onClick) {
   return node;
 }
 
+function renderSongCard(song) {
+  const item = element("li", undefined, "card");
+  item.append(element("strong", song.title), element("p", song.artist),
+    element("span", song.language || "未分類", "song-language"));
+  return item;
+}
+
 function renderAnnouncements() {
   clearTimeout(announcementTimer);
   const remaining = announcements.lastAddedAt + announcementDays - Date.now();
@@ -289,11 +297,7 @@ function renderAnnouncements() {
     announcementTimer = setTimeout(renderAnnouncements, Math.min(remaining, 2_147_483_647));
   }
   $("no-new-songs").hidden = recent.length > 0;
-  $("new-songs").replaceChildren(...recent.map((song) => {
-    const item = element("li", undefined, "card");
-    item.append(element("strong", song.title), element("p", song.artist));
-    return item;
-  }));
+  $("new-songs").replaceChildren(...recent.map(renderSongCard));
 }
 
 function renderSongs() {
@@ -316,11 +320,7 @@ function renderSongs() {
     const section = element("section", undefined, "song-group");
     const heading = element("h2", group === englishGroup ? "英文歌名" : group ? `${group} 字` : "其他");
     const cards = element("ul", undefined, "cards");
-    cards.append(...entries.map((song) => {
-      const item = element("li", undefined, "card");
-      item.append(element("strong", song.title), element("p", song.artist));
-      return item;
-    }));
+    cards.append(...entries.map(renderSongCard));
     section.append(heading, cards);
     return section;
   }));
