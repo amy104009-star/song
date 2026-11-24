@@ -16,6 +16,9 @@ if (!template.includes('href="https://lili-songbook.easyarena3.chatgpt.site/mail
 if (!template.includes('<details id="artist-directory"')) {
   throw new Error("The public playlist is missing the collapsible artist list");
 }
+if (!/<select id="artist"><\/select><\/label>\s*<details id="artist-directory"/.test(template)) {
+  throw new Error("The singer dropdown must be available above the collapsible artist list");
+}
 if (!template.includes('<details id="draw-history"')) {
   throw new Error("The public playlist is missing the collapsible draw history");
 }
