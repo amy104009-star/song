@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile, appendFile } from "node:fs/promises";
 const genres = new Set(["抒情", "輕快", "動感舞曲", "搖滾", "饒舌", "古風"]);
 const languages = new Set(["中文", "台語", "粵語", "英文", "韓文", "日文", "越南文"]);
 const seedPattern = /(<script id="seed" type="application\/json">)([\s\S]*?)(<\/script>)/;
-const template = await readFile("public-template/index.html", "utf8");
+const template = (await readFile("public-template/index.html", "utf8")).replaceAll("\r\n", "\n");
 if (!template.includes("<title>北村歌單</title>")) {
   throw new Error("The public playlist has an unexpected title");
 }
