@@ -187,6 +187,26 @@
       linear-gradient(175deg,#ffe8a8,#fff9e8 75%);
     box-shadow: 0 13px 37px #492d1020;
   }
+  .playlist-header::before,
+  .playlist-header::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+  }
+  .playlist-header::before {
+    z-index: -2;
+    inset: -1.15rem;
+    background: url("./playlist-background.jpg") center 30% / cover no-repeat;
+    filter: blur(13px);
+  }
+  .playlist-header::after {
+    z-index: -1;
+    inset: 0;
+    background: linear-gradient(115deg, #fff2cba6, #ffefc0bb 55%, #f9dc8b8a);
+  }
+  @media (max-width: 37rem) {
+    .playlist-header::before { background-position: center 26%; }
+  }
   .playlist-title { display: grid; justify-items: center; gap: .65rem; }
   .title-emblem { color: #8b611f; font-family: Georgia, serif; font-size: 1.2rem; letter-spacing: .65em; margin-inline-start: .65em; }
   .playlist-header h1 {
