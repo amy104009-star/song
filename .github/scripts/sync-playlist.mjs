@@ -38,7 +38,9 @@ const response = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/
 });
 if (!response.ok) throw new Error(`Playlist request failed: ${response.status}`);
 const { songs, revision, announcements, message = "", messageTwo = "",
-  marqueeEffects = ["fade", "float", "rays", "twinkle"], hiddenLanguages = [] } = await response.json();
+  marqueeEffects = ["fade", "float", "rays", "twinkle"],
+  marqueeStyle = { height: "medium", size: "medium", font: "sans" },
+  hiddenLanguages = [] } = await response.json();
 if (!Number.isSafeInteger(revision) || revision < 0 || !Array.isArray(songs) ||
   songs.length > 2000 || !songs.every((song) => song &&
     Number.isSafeInteger(song.id) && song.id > 0 &&
@@ -63,6 +65,7 @@ if (!template.includes("function titleLength(title)") || !template.includes("fun
 const messagePattern = /(<script id="playlist-message-data" type="application\/json">)[\s\S]*?(<\/script>)/;
 const messageTwoPattern = /(<script id="playlist-message-two-data" type="application\/json">)[\s\S]*?(<\/script>)/;
 const effectsPattern = /(<script id="marquee-effects-data" type="application\/json">)[\s\S]*?(<\/script>)/;
+const stylePattern = /(<script id="marquee-style-data" type="application\/json">)[\s\S]*?(<\/script>)/;
 if (template.includes('id="marquee-pause"') || !messagePattern.test(template) || !messageTwoPattern.test(template) ||
   [message, messageTwo].some((value) => typeof value !== "string" || value.length > 300)) {
   throw new Error("Playlist message is missing or invalid");
@@ -80,6 +83,7 @@ const marqueeData = [
   [messagePattern, message],
   [messageTwoPattern, messageTwo],
   [effectsPattern, marqueeEffects],
+  [stylePattern, marqueeStyle],
 ];
 const templateWithMarquees = marqueeData.reduce((html, [pattern, value]) =>
   html.replace(pattern, (_, start, end) => start + JSON.stringify(value).replaceAll("<", "\\u003c") + end), template);
