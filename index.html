@@ -70,11 +70,16 @@
   .artist-buttons { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1rem; }
   .artist-buttons button { border-radius: 999px; overflow-wrap: anywhere; max-width: 100%; }
   .artist-buttons button[aria-pressed="true"] { background: #ffda72; border-color: #a36d20; }
-  .artist-directory-groups { display: grid; gap: .75rem; margin-top: .6rem; }
-  .artist-category { min-width: 0; padding: .65rem .75rem; border: 1px solid #e5cea0; border-radius: .8rem; background: #fffbef; }
+  .artist-directory-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: .55rem; margin-top: .6rem; }
+  .artist-directory-columns > button { grid-column: 1 / -1; justify-self: start; }
+  .artist-category { min-width: 0; padding: .4rem; border: 1px solid #e5cea0; border-radius: .8rem; background: #fffbef; }
   #artist-directory .artist-category > summary { width: 100%; padding: .4rem .65rem; border: 1px solid #e5cea0; border-radius: .6rem; background: #fff5dd; font-size: .92rem; }
   #artist-directory .artist-category[open] > summary { background: #f5e3b7; }
-  .artist-category .artist-buttons { margin-top: .35rem; }
+  .artist-category .artist-buttons { display: grid; gap: .3rem; margin-top: .4rem; padding: 0; }
+  .artist-category .artist-buttons button { width: 100%; text-align: start; border-radius: .55rem; }
+  @media (min-width: 42rem) {
+    .artist-directory-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
   ul { list-style: none; padding: 0; margin: 0; }
   .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
   @media (min-width: 56rem) { .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -395,7 +400,7 @@
     <label class="artist-select">歌手下拉選單<select id="artist"></select></label>
     <details id="artist-directory" class="artist-directory filter-row">
       <summary>歌手 <span class="when-closed">展開</span><span class="when-open">收合</span></summary>
-      <div id="artist-buttons" class="artist-directory-groups" aria-label="依分類選擇歌手"></div>
+      <div id="artist-buttons" class="artist-directory-columns" aria-label="依分類選擇歌手"></div>
     </details>
   </section>
   <section class="announcements" aria-labelledby="announcements-title">
