@@ -182,9 +182,7 @@
     padding: clamp(2rem, 7vw, 4rem) 1rem;
     border: 1px solid #fff8ee;
     border-radius: 1.65rem;
-    background: radial-gradient(ellipse at 23% 0%, #fff0bce6, transparent 65%),
-      radial-gradient(ellipse at 90% 18%, #f4d28ba1, transparent 56%),
-      linear-gradient(175deg,#ffe8a8,#fff9e8 75%);
+    background: #48433d;
     box-shadow: 0 13px 37px #492d1020;
   }
   .playlist-header::before,
@@ -195,39 +193,39 @@
   }
   .playlist-header::before {
     z-index: -2;
-    inset: -1.15rem;
-    background: url("./playlist-background.jpg") center 30% / cover no-repeat;
-    filter: blur(13px);
+    inset: 0;
+    background: url("./playlist-background.jpg") center 31% / cover no-repeat;
   }
   .playlist-header::after {
     z-index: -1;
     inset: 0;
-    background: linear-gradient(115deg, #fff2cba6, #ffefc0bb 55%, #f9dc8b8a);
+    background: linear-gradient(180deg, transparent 10%, #21191116 42%, #21191155);
   }
   @media (max-width: 37rem) {
     .playlist-header::before { background-position: center 26%; }
   }
   .playlist-title { display: grid; justify-items: center; gap: .65rem; }
-  .title-emblem { color: #8b611f; font-family: Georgia, serif; font-size: 1.2rem; letter-spacing: .65em; margin-inline-start: .65em; }
+  .title-emblem { color: #fff; text-shadow: 0 2px 8px #211a16; font-family: Georgia, serif; font-size: 1.2rem; letter-spacing: .65em; margin-inline-start: .65em; }
   .playlist-header h1 {
     margin: 0;
-    color: #4a3217;
+    color: #fff;
+    text-shadow: 0 2px 5px #211910d9, 0 3px 14px #211910a6;
     font: 800 clamp(2.2rem, 9vw, 5.1rem)/1.1 "Noto Serif TC", "Songti TC", "Microsoft JhengHei", serif;
     letter-spacing: .085em;
     text-align: center;
   }
-  .playlist-header h1 span { color: #8b5b16; }
+  .playlist-header h1 span { color: inherit; }
   #open-draw {
     min-height: 3.3rem;
     min-width: min(13rem, 100%);
     padding-inline: 1.45rem;
-    color: #4b3213;
-    border: 1px solid #b58126;
+    color: #29241f;
+    border: 1px solid #ffffffbb;
     border-radius: 999px;
-    background: linear-gradient(120deg,#ffe38c,#f4c764);
+    background: #fffdf6ed;
     box-shadow: 0 9px 22px #85531338;
   }
-  #open-draw:hover { background: #f4c764; }
+  #open-draw:hover { background: #fff; }
   .playlist-marquee, .announcements, .song-filters, .library-heading {
     background: var(--paper);
     border: 1px solid var(--line);
