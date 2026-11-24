@@ -36,6 +36,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Cache Unicode stroke data
+        id: unihan
+        uses: actions/cache@v4
+        with:
+          path: unihan
+          key: unicode-unihan-strokes-17.0.0
+      - name: Retrieve Unicode stroke data
+        if: steps.unihan.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p unihan
+          curl --fail --silent --show-error --location --retry 3 --max-time 45 https://www.unicode.org/Public/17.0.0/ucd/Unihan.zip --output "$RUNNER_TEMP/Unihan.zip"
+          unzip -q "$RUNNER_TEMP/Unihan.zip" Unihan_IRGSources.txt Unihan_DictionaryLikeData.txt -d unihan
       - name: Build the current songbook
         id: snapshot
         run: node .github/scripts/sync-playlist.mjs

@@ -33,7 +33,35 @@ if (!announcementPattern.test(template) || !announcements ||
   throw new Error("Announcement metadata is missing or invalid");
 }
 const notice = JSON.stringify({ lastAddedAt: announcements.lastAddedAt, ids: announcements.ids });
-const page = template
+const strokes = new Map();
+const irg = await readFile("unihan/Unihan_IRGSources.txt", "utf8");
+for (const match of irg.matchAll(/^U\+([0-9A-F]+)\tkTotalStrokes\t(\d+)/gm)) {
+  strokes.set(parseInt(match[1], 16), Number(match[2]));
+}
+const variants = await readFile("unihan/Unihan_DictionaryLikeData.txt", "utf8");
+for (const match of variants.matchAll(/^U\+([0-9A-F]+)\tkAlternateTotalStrokes\t([^\r\n]+)/gm)) {
+  const taiwan = match[2].split(" ").find((value) => /^\d+:[A-Z]*T[A-Z]*$/.test(value));
+  if (taiwan) strokes.set(parseInt(match[1], 16), Number(taiwan.split(":")[0]));
+}
+if (strokes.size < 90000 || strokes.get(0x4e00) !== 1 || strokes.get(0x738b) !== 4) {
+  throw new Error("Unicode stroke data is incomplete");
+}
+const ranges = [];
+let start = 0;
+let values = [];
+for (const [code, count] of [...strokes].sort(([a], [b]) => a - b)) {
+  if (!values.length || code - start - values.length > 32) {
+    if (values.length) ranges.push([start, Buffer.from(values).toString("base64")]);
+    start = code;
+    values = [];
+  }
+  while (start + values.length < code) values.push(0);
+  values.push(count);
+}
+if (values.length) ranges.push([start, Buffer.from(values).toString("base64")]);
+const strokePattern = /(<script id="stroke-data" type="application\/json">)[\s\S]*?(<\/script>)/;
+if (!strokePattern.test(template)) throw new Error("Missing stroke count data slot");
+const page = template.replace(strokePattern, (_, start, end) => start + JSON.stringify(ranges) + end)
   .replace(seedPattern, (_, start, __, end) => start + seed + end)
   .replace(announcementPattern, (_, start, end) => start + notice + end);
 
