@@ -315,8 +315,11 @@
       <button id="open-draw" class="primary">🎲 隨機選歌</button>
     </div>
   </header>
-  <section class="playlist-marquee" id="playlist-marquee" aria-label="歌單留言" hidden>
+  <section class="playlist-marquee" id="playlist-marquee" aria-label="第一條歌單留言" hidden>
     <div class="marquee-window"><p id="marquee-text" class="marquee-text"></p></div>
+  </section>
+  <section class="playlist-marquee" id="playlist-marquee-two" aria-label="第二條歌單留言" hidden>
+    <div class="marquee-window"><p id="marquee-text-two" class="marquee-text"></p></div>
   </section>
   <section class="song-filters radio-filters" aria-label="歌單篩選">
     <label class="radio-search">
@@ -376,6 +379,7 @@
 <script id="seed" type="application/json">[{"id":1,"title":"來遲","artist":"戴羽彤"},{"id":2,"title":"我認","artist":"戴羽彤"},{"id":3,"title":"指紋","artist":"杜宣達"},{"id":4,"title":"慢冷","artist":"梁靜茹"},{"id":5,"title":"卜卦","artist":"崔子格"},{"id":6,"title":"沉溺","artist":"邱振哲"},{"id":7,"title":"愛你","artist":"王心凌 / 陳芳語"},{"id":8,"title":"旋木","artist":"王菲"},{"id":9,"title":"寧夏","artist":"梁靜茹"},{"id":10,"title":"小半","artist":"陳粒"},{"id":11,"title":"忘了","artist":"周林楓"},{"id":12,"title":"偏愛","artist":"張芸京"},{"id":13,"title":"天下","artist":"張杰"},{"id":14,"title":"觸電","artist":"芭比"},{"id":15,"title":"涼涼","artist":"楊宗緯 & 張碧晨"},{"id":16,"title":"問風","artist":"金漁"},{"id":17,"title":"年輪","artist":"張碧晨"},{"id":18,"title":"春泥","artist":"庾澄慶"},{"id":19,"title":"訣愛","artist":"詹雯婷"},{"id":20,"title":"下山","artist":"要不要買菜"},{"id":21,"title":"傻瓜","artist":"溫嵐"},{"id":22,"title":"麒麟","artist":"早安"},{"id":23,"title":"放生","artist":"范逸臣"},{"id":24,"title":"側臉","artist":"于果"},{"id":25,"title":"不如","artist":"秦海清"},{"id":26,"title":"不懂","artist":"張信哲"},{"id":27,"title":"仗著","artist":"陳壹千"},{"id":28,"title":"預謀","artist":"許佳慧"},{"id":29,"title":"妥協","artist":"蔡依林"},{"id":30,"title":"舞孃","artist":"蔡依林"},{"id":31,"title":"黃昏","artist":"周傳雄"},{"id":32,"title":"雨蝶","artist":"李翊君"},{"id":33,"title":"天使","artist":"五月天"},{"id":34,"title":"人是","artist":"周深"},{"id":35,"title":"倒帶","artist":"蔡依林"},{"id":36,"title":"紅豆","artist":"王菲"},{"id":37,"title":"如願","artist":"王菲"},{"id":38,"title":"淪陷","artist":"王靖雯不胖"},{"id":39,"title":"雨愛","artist":"楊丞琳"},{"id":40,"title":"毒藥","artist":"蕭秉治/周星星"},{"id":41,"title":"泡沫","artist":"鄧紫棋"},{"id":42,"title":"唯一","artist":"告五人"},{"id":43,"title":"人質","artist":"張惠妹"},{"id":44,"title":"擱淺","artist":"周杰倫"},{"id":45,"title":"愛錯","artist":"王力宏"},{"id":46,"title":"嘉賓","artist":"張遠"},{"id":47,"title":"綠色","artist":"陳雪凝"},{"id":48,"title":"過客","artist":"阿涵"},{"id":49,"title":"體面","artist":"于文文"},{"id":50,"title":"阿嬤","artist":"周林楓"},{"id":51,"title":"塵埃","artist":"家家"},{"id":52,"title":"招娣","artist":"周林楓"},{"id":53,"title":"落海","artist":"任然"},{"id":54,"title":"暖暖","artist":"梁靜茹"},{"id":55,"title":"心牆","artist":"郭靜"},{"id":56,"title":"曹操","artist":"林俊傑"},{"id":57,"title":"凝眸","artist":"王心凌"},{"id":58,"title":"演員","artist":"薛之謙"},{"id":59,"title":"晴天","artist":"周杰倫"},{"id":60,"title":"你走","artist":"鬆緊先生"},{"id":61,"title":"江南","artist":"林俊傑"},{"id":62,"title":"恆溫","artist":"孫盛希"},{"id":63,"title":"善變","artist":"王靖雯不胖"},{"id":64,"title":"命運","artist":"家家"},{"id":65,"title":"莫等","artist":"買辣椒也用券"},{"id":66,"title":"起風了","artist":"買辣椒也用券"},{"id":67,"title":"桃花諾","artist":"鄧紫棋"},{"id":68,"title":"淒美地","artist":"郭頂"},{"id":69,"title":"喜歡你","artist":"鄧紫棋 / 陳潔儀"},{"id":70,"title":"星河嘆","artist":"黃齡"},{"id":71,"title":"下雨天","artist":"南拳媽媽"},{"id":72,"title":"青花瓷","artist":"周杰倫"},{"id":73,"title":"愛無赦","artist":"蔡依林"},{"id":74,"title":"日不落","artist":"蔡依林"},{"id":75,"title":"講真的","artist":"曾惜"},{"id":76,"title":"處處吻","artist":"楊千嬅"},{"id":77,"title":"跳樓機","artist":"LBI 利比"},{"id":78,"title":"明明就","artist":"周杰倫"},{"id":79,"title":"小幸運","artist":"田馥甄"},{"id":80,"title":"七里香","artist":"周杰倫"},{"id":81,"title":"我不配","artist":"周杰倫"},{"id":82,"title":"童話鎮","artist":"陳一發兒"},{"id":83,"title":"從前說","artist":"小阿七"},{"id":84,"title":"歐若拉","artist":"張韶涵"},{"id":85,"title":"怎麼了","artist":"周興哲"},{"id":86,"title":"伯虎說","artist":"伯爵 Johnny & 唐伯虎 Annie"},{"id":87,"title":"帶我走","artist":"楊丞琳"},{"id":88,"title":"九張機","artist":"葉炫清"},{"id":89,"title":"愛存在","artist":"王靖雯不胖"},{"id":90,"title":"千年淚","artist":"Tank"},{"id":91,"title":"紅昭願","artist":"音闕詩聽"},{"id":92,"title":"褪黑素","artist":"江皓南"},{"id":93,"title":"我知道","artist":"BY2"},{"id":94,"title":"愛上你","artist":"BY2"},{"id":95,"title":"他他他","artist":"艾辰"},{"id":96,"title":"安和橋","artist":"宋冬野"},{"id":97,"title":"那些年","artist":"胡夏"},{"id":98,"title":"聽說你","artist":"于冬然"},{"id":99,"title":"冷雨夜","artist":"Beyond"},{"id":100,"title":"字字句句","artist":"盧盧快閉嘴"},{"id":101,"title":"告白氣球","artist":"周杰倫"},{"id":102,"title":"忽而今夏","artist":"汪蘇瀧"},{"id":103,"title":"不醉不會","artist":"田馥甄"},{"id":104,"title":"失戀無罪","artist":"A-Lin"},{"id":105,"title":"光年之外","artist":"鄧紫棋"},{"id":106,"title":"修煉愛情","artist":"林俊傑"},{"id":107,"title":"你敢不敢","artist":"徐佳瑩"},{"id":108,"title":"說散就散","artist":"JC 陳詠桐"},{"id":109,"title":"愛人錯過","artist":"告五人"},{"id":110,"title":"一笑傾城","artist":"汪蘇瀧"},{"id":111,"title":"路過人間","artist":"郁可唯"},{"id":112,"title":"最後一頁","artist":"江語晨"},{"id":113,"title":"愛Y愛Y","artist":"BY2"},{"id":114,"title":"公主殿下","artist":"崔洋"},{"id":115,"title":"少一點天分","artist":"孫盛希"},{"id":116,"title":"今夜有雨","artist":"h3r3劉青雲"}]</script>
 <script id="announcement-data" type="application/json">{"lastAddedAt":1795496137732,"ids":[107,108,109,110,111,112,113,114,115,116]}</script>
 <script id="playlist-message-data" type="application/json">""</script>
+<script id="playlist-message-two-data" type="application/json">""</script>
 <script id="language-visibility-data" type="application/json">[]</script>
 <script type="module">
 const $ = (id) => document.getElementById(id);
@@ -677,9 +681,9 @@ $("draw-button").addEventListener("click", () => {
   $("draw-preview-title").textContent = candidates[0].title;
   drawFrame = requestAnimationFrame(shuffle);
 });
-function renderMarquee(message) {
-  const bar = $("playlist-marquee");
-  const text = $("marquee-text");
+function renderMarquee(message, suffix = "") {
+  const bar = $("playlist-marquee" + suffix);
+  const text = $("marquee-text" + suffix);
   const value = message.trim().replace(/\s+/g, " ");
   if (text.textContent !== value) {
     text.textContent = value;
@@ -689,6 +693,7 @@ function renderMarquee(message) {
 }
 
 renderMarquee(JSON.parse($("playlist-message-data").textContent));
+renderMarquee(JSON.parse($("playlist-message-two-data").textContent), "-two");
 
 updateOptions();
 renderAnnouncements();
@@ -702,8 +707,9 @@ async function loadLatestSongs() {
       signal: AbortSignal.timeout(4500),
     });
     if (!response.ok) return;
-    const { songs: latest, announcements: notice, message, hiddenLanguages: settings } = await response.json();
+    const { songs: latest, announcements: notice, message, messageTwo, hiddenLanguages: settings } = await response.json();
     if (typeof message === "string") renderMarquee(message);
+    if (typeof messageTwo === "string") renderMarquee(messageTwo, "-two");
     if (!Array.isArray(latest) || !latest.every((song) => song &&
       Number.isSafeInteger(song.id) && typeof song.title === "string" &&
       typeof song.artist === "string") ||
