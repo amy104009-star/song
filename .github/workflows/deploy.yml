@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url || steps.retry.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -42,14 +42,29 @@ jobs:
       - uses: actions/configure-pages@v5
         if: steps.snapshot.outputs.publish == 'true'
       - uses: actions/upload-pages-artifact@v4
-        id: archive
         if: steps.snapshot.outputs.publish == 'true'
         with:
           path: site-dist
-      - name: Publish the uploaded artifact
-        id: deploy
+      - name: Wait for GitHub to list the uploaded artifact
         if: steps.snapshot.outputs.publish == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          PAGES_ARTIFACT_ID: ${{ steps.archive.outputs.artifact_id }}
-        run: node .github/scripts/publish-pages.mjs
+        run: |
+          for attempt in {1..12}; do
+            if gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts" --jq '.artifacts[] | select(.name == "github-pages" and .expired == false) | .id' | grep -q .; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "GitHub did not list the uploaded Pages artifact" >&2
+          exit 1
+      - uses: actions/deploy-pages@v4
+        if: steps.snapshot.outputs.publish == 'true'
+        id: deploy
+        continue-on-error: true
+      - name: Allow the uploaded artifact to become visible before retrying
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 15
+      - uses: actions/deploy-pages@v4
+        if: steps.deploy.outcome == 'failure'
+        id: retry
