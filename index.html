@@ -171,103 +171,43 @@
   }
   main { width: min(100% - 2rem, 68rem); padding-top: clamp(1rem, 4vw, 2.75rem); }
   .playlist-header {
-    --champagne: #c29c80;
     position: relative;
-    isolation: isolate;
     display: grid;
     justify-items: center;
-    gap: 1.1rem;
+    isolation: isolate;
     overflow: hidden;
-    padding: clamp(2.3rem, 7vw, 4.6rem) 1.3rem clamp(1.9rem, 5vw, 3.2rem);
-    border: 1px solid #fff4e7;
-    border-radius: 1.7rem;
-    background:
-      radial-gradient(ellipse at 48% 0%, #fffdfa 0%, transparent 58%),
-      radial-gradient(ellipse at 99% 100%, #e5b4b678 0%, transparent 59%),
-      linear-gradient(125deg, #fff5e9f7, #f8e8e1f2 62%, #efdbd1e8);
-    box-shadow: 0 14px 36px #52362a24, inset 0 0 20px #fff7efb0;
+    min-height: clamp(14.8rem, 29vw, 19rem);
+    align-content: center;
+    gap: 1.65rem;
+    padding: clamp(2rem, 7vw, 4rem) 1rem;
+    border: 1px solid #fff8ee;
+    border-radius: 1.65rem;
+    background: radial-gradient(ellipse at 23% 0%, #ffd9dbe6, transparent 65%),
+      radial-gradient(ellipse at 90% 18%, #f4bdc4a1, transparent 56%),
+      linear-gradient(175deg,#fae6df,#fff8eb 75%);
+    box-shadow: 0 13px 37px #48272220;
   }
-  .playlist-header::before {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    inset: .53rem;
-    pointer-events: none;
-    border: 1px solid #ad846664;
-    border-radius: 1.3rem;
-    background:
-      radial-gradient(circle at 8% 26%, #fffcf5 0 2px, transparent 4px),
-      radial-gradient(circle at 16% 74%, #fffaf1 0 1px, transparent 4px),
-      radial-gradient(circle at 83% 28%, #fffaf5 0 2px, transparent 4px),
-      radial-gradient(circle at 92% 70%, #fffaf5 0 2px, transparent 5px);
-  }
-  .playlist-title {
-    position: relative;
-    display: grid;
-    grid-template-columns: auto minmax(0,1fr) auto;
-    align-items: center;
-    column-gap: clamp(.5rem, 2.5vw, 1.5rem);
-    max-width: 100%;
-    padding: .25rem .2rem 1.3rem;
-  }
-  .playlist-title::after {
-    content: "";
-    position: absolute;
-    inset-inline: 18%;
-    bottom: .3rem;
-    height: 1px;
-    background: linear-gradient(90deg,transparent,#bf947e 36%,#9b6d59 50%,#bf947e 64%,transparent);
-  }
-  .playlist-title::before {
-    content: "";
-    position: absolute;
-    bottom: .12rem;
-    left: calc(50% - .2rem);
-    width: .4rem;
-    height: .4rem;
-    transform: rotate(45deg);
-    border: 1px solid #9e745d;
-    background: #fff1ea;
-    z-index: 1;
-  }
+  .playlist-title { display: grid; justify-items: center; gap: .65rem; }
+  .title-emblem { color: #a83e52; font-family: Georgia, serif; font-size: 1.2rem; letter-spacing: .65em; margin-inline-start: .65em; }
   .playlist-header h1 {
     margin: 0;
-    font-family: "Noto Serif TC", "Songti TC", "Microsoft JhengHei", serif;
-    font-size: clamp(1.8rem, 7.4vw, 4.75rem);
-    line-height: 1.12;
-    font-weight: 700;
-    letter-spacing: .12em;
-    color: #593527;
-    text-wrap: nowrap;
+    color: #44282a;
+    font: 800 clamp(2.2rem, 9vw, 5.1rem)/1.1 "Noto Serif TC", "Songti TC", "Microsoft JhengHei", serif;
+    letter-spacing: .085em;
+    text-align: center;
   }
-  @supports (-webkit-background-clip: text) {
-    .playlist-header h1 {
-      background: linear-gradient(170deg,#44281f 16%,#65392f 55%,#8d514a 94%);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-  }
-  .title-emblem {
-    display: grid;
-    place-items: center;
-    width: clamp(1rem, 4.3vw, 2.45rem);
-    font-family: Georgia, serif;
-    font-size: clamp(.9rem, 3.4vw, 1.75rem);
-    line-height: 1;
-    color: #8f5e49;
-  }
-  .title-moon { transform: rotate(-12deg); }
-  .title-bear { color: #a77a62; }
+  .playlist-header h1 span { color: #a4364e; }
   #open-draw {
-    min-height: 3rem;
-    padding-inline: 1.5rem;
-    color: #573629;
-    border: 1px solid #be947c;
+    min-height: 3.3rem;
+    min-width: min(13rem, 100%);
+    padding-inline: 1.45rem;
+    color: #fffdf7;
+    border: 1px solid #9b2d46;
     border-radius: 999px;
-    background: linear-gradient(180deg,#fff9ef,#f2dacf);
-    box-shadow: 0 4px 16px #71433222, inset 0 1px #fff;
+    background: linear-gradient(120deg,#b94b60,#8d2941);
+    box-shadow: 0 9px 22px #80283d45;
   }
-  #open-draw:hover { background: #f5e2d4; }
+  #open-draw:hover { background: #8d2941; }
   .playlist-marquee, .announcements, .song-filters, .library-heading {
     background: var(--paper);
     border: 1px solid var(--line);
@@ -311,6 +251,42 @@
     .card .song-title-row { justify-content: flex-start; }
     .card .copy-song-title { min-height: 2rem; }
   }
+  .radio-filters { display: grid; gap: .95rem; margin-bottom: 1.2rem; background: #fbf4eaf7; border-color: #eee1d9; min-width: 0; }
+  .screen-reader { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .radio-search { position: relative; display: block; }
+  .radio-search input { height: 3.05rem; padding-inline: 2.65rem 1rem; border-radius: 999px; background: #fffdf8; border-color: #ded0c4; box-shadow: 0 3px 9px #4a292315; }
+  .radio-search input::placeholder { color: #785e59; }
+  .search-symbol { position: absolute; top: 1.03rem; left: 1.05rem; width: .73rem; height: .73rem; border: 1.5px solid #654947; border-radius: 50%; pointer-events: none; }
+  .search-symbol::after { content: ""; position: absolute; width: .33rem; height: 1.5px; background: #654947; transform: rotate(48deg); transform-origin: left; left: .53rem; top: .54rem; }
+  .filter-row { min-width: 0; --chip-bg: #513236; --chip-color: #fffaf3; }
+  .filter-row h2, .filter-row summary { font-size: .87rem; letter-spacing: .045em; color: #624c44; font-weight: 740; }
+  .filter-row h2::before { content: ""; display: inline-block; width: .48rem; height: .48rem; border-radius: 50%; background: var(--chip-bg); margin-inline-end: .4rem; }
+  .language-row { --chip-bg: #ead4a3; --chip-color: #543923; }
+  .genre-row { --chip-bg: #a83b55; }
+  .filter-chips {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: .45rem;
+    overflow-x: auto;
+    margin-top: .35rem;
+    padding: .15rem .1rem .29rem;
+    scrollbar-width: thin;
+    scrollbar-color: #d9bfb1 transparent;
+  }
+  .filter-chips button { flex: none; min-height: 2.45rem; padding: .32rem .68rem; border-radius: 999px; border: 1px solid #e4d5ca; background: #fffaf3; color: #523b34; white-space: nowrap; font-size: .87rem; }
+  .filter-chips button[aria-pressed="true"] { background: var(--chip-bg); border-color: var(--chip-bg); color: var(--chip-color); }
+  .filter-chips button:focus-visible { outline-offset: -2px; }
+  .radio-filters .artist-directory { margin-top: 0; }
+  .radio-filters .artist-directory summary { width: fit-content; padding: 0; background: transparent; border: 0; }
+  .radio-filters .artist-directory summary span { font-size: .78rem; color: #745b55; }
+  .artist-select { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; font-size: .85rem; }
+  .artist-select select { width: auto; max-width: 100%; min-height: 2.4rem; padding-block: .2rem; background: #fffaf3; border-color: #e4d5ca; }
+  .announcements { margin-bottom: .9rem; }
+  @media (max-width: 37rem) {
+    .playlist-header { border-radius: 1.2rem; }
+    .radio-filters { gap: .8rem; }
+    .artist-select select { flex: 1; min-width: 7rem; }
+  }
 </style>
 </head>
 <body>
@@ -319,9 +295,8 @@
 <main>
   <header class="playlist-header">
     <div class="playlist-title">
-      <span class="title-emblem title-moon" aria-hidden="true">☾</span>
-      <h1>北村歌單</h1>
-      <span class="title-emblem title-bear" aria-hidden="true">✧</span>
+      <span class="title-emblem" aria-hidden="true">☾ ✧</span>
+      <h1>北村<span>歌單</span></h1>
     </div>
     <div class="actions">
       <button id="open-draw" class="primary">🎲 隨機選歌</button>
@@ -330,21 +305,30 @@
   <section class="playlist-marquee" id="playlist-marquee" aria-label="歌單留言" hidden>
     <div class="marquee-window"><p id="marquee-text" class="marquee-text"></p></div>
   </section>
+  <section class="song-filters radio-filters" aria-label="歌單篩選">
+    <label class="radio-search">
+      <span class="screen-reader">搜尋歌曲或歌手</span>
+      <span class="search-symbol" aria-hidden="true"></span>
+      <input id="search" type="search" placeholder="搜尋歌名或歌手…">
+    </label>
+    <div class="filter-row language-row">
+      <h2 id="language-filter-title">語言</h2>
+      <div class="filter-chips" id="language-buttons" role="group" aria-labelledby="language-filter-title"></div>
+    </div>
+    <div class="filter-row genre-row">
+      <h2 id="genre-filter-title">曲風</h2>
+      <div class="filter-chips" id="genre-buttons" role="group" aria-labelledby="genre-filter-title"></div>
+    </div>
+    <details id="artist-directory" class="artist-directory filter-row" open>
+      <summary>歌手 <span class="when-closed">展開</span><span class="when-open">收合</span></summary>
+      <div class="artist-buttons filter-chips" id="artist-buttons" role="group" aria-label="快速選擇歌手"></div>
+      <label class="artist-select">歌手下拉選單<select id="artist"></select></label>
+    </details>
+  </section>
   <section class="announcements" aria-labelledby="announcements-title">
     <h2 id="announcements-title">📣 新歌公告欄</h2>
     <ul class="announcement-list" id="new-songs"></ul>
     <p id="no-new-songs" hidden>目前沒有新歌公告</p>
-  </section>
-  <section class="song-filters" aria-label="歌單篩選">
-  <div class="filters">
-    <label>搜尋歌曲或歌手<input id="search" type="search" placeholder="輸入歌名或歌手"></label>
-    <label>歌手分類<select id="artist"></select></label>
-    <label>曲風<select id="genre"></select></label>
-  </div>
-  <details id="artist-directory" class="artist-directory">
-    <summary>歌手清單 <span class="when-closed">展開</span><span class="when-open">收合</span></summary>
-    <div class="artist-buttons" id="artist-buttons" role="group" aria-label="快速選擇歌手"></div>
-  </details>
   </section>
   <div class="library-heading">
     <h2 id="library-title">全部歌曲</h2>
@@ -418,7 +402,8 @@ function titleLength(title) {
 
 const seed = JSON.parse($("seed").textContent);
 const genreOptions = ["抒情", "輕快", "動感舞曲", "搖滾", "饒舌", "古風"];
-$("genre").replaceChildren(new Option("全部曲風", ""), ...genreOptions.map((genre) => new Option(genre, genre)));
+const languageOptions = ["中文", "台語", "粵語", "英文", "韓文", "日文", "越南文", "未分類"];
+const filters = { language: "", genre: "" };
 const history = new Map();
 const drawLog = [];
 const drawDuration = 3500;
@@ -453,8 +438,13 @@ function updateOptions() {
     select.replaceChildren(new Option("全部歌曲", ""), ...names.map((name) => new Option(name, name)));
     select.value = names.includes(value) ? value : "";
   }
-  $("artist-buttons").replaceChildren(...["", ...names].map((name) => {
-    const choice = button(name || "全部歌曲", () => {
+  const artistCounts = new Map();
+  for (const song of songs) {
+    for (const artist of new Set(artists(song))) artistCounts.set(artist, (artistCounts.get(artist) ?? 0) + 1);
+  }
+  const prioritized = [...names].sort((a, b) => artistCounts.get(b) - artistCounts.get(a));
+  $("artist-buttons").replaceChildren(...["", ...prioritized].map((name) => {
+    const choice = button(name || "所有歌手", () => {
       $("artist").value = name;
       renderSongs();
     });
@@ -510,14 +500,31 @@ function renderAnnouncements() {
   $("new-songs").replaceChildren(...recent.map(renderSongCard));
 }
 
+function mountChips(id, options, filter, allLabel) {
+  $(id).replaceChildren(...["", ...options].map((value) => {
+    const choice = button(value || allLabel, () => {
+      filters[filter] = value;
+      renderSongs();
+    });
+    choice.dataset.value = value;
+    return choice;
+  }));
+}
+
 function renderSongs() {
+  for (const [id, current] of [["language-buttons", filters.language], ["genre-buttons", filters.genre]]) {
+    for (const choice of $(id).children) {
+      choice.setAttribute("aria-pressed", String(choice.dataset.value === current));
+    }
+  }
   const group = $("artist").value;
   for (const choice of $("artist-buttons").children) {
     choice.setAttribute("aria-pressed", String(choice.dataset.artist === group));
   }
-  const genre = $("genre").value;
+  const { language, genre } = filters;
   const visible = songs.filter((song) =>
-    (!group || artists(song).includes(group)) && (!genre || song.genre === genre) && matches(song, $("search"))
+    (!group || artists(song).includes(group)) && (!genre || song.genre === genre) &&
+    (!language || (song.language || "未分類") === language) && matches(song, $("search"))
   );
   $("count").textContent = visible.length ? `共 ${visible.length} 首歌` : "找不到歌曲";
   const groups = new Map();
@@ -562,7 +569,8 @@ function renderDraw() {
 
 $("search").addEventListener("input", renderSongs);
 $("artist").addEventListener("change", renderSongs);
-$("genre").addEventListener("change", renderSongs);
+mountChips("language-buttons", languageOptions, "language", "全部語言");
+mountChips("genre-buttons", genreOptions, "genre", "全部曲風");
 $("open-draw").addEventListener("click", () => $("draw").showModal());
 document.querySelectorAll("[data-close]").forEach((node) => {
   node.addEventListener("click", () => $(node.dataset.close).close());
