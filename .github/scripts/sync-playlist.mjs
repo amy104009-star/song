@@ -16,7 +16,8 @@ if (!template.includes('href="https://lili-songbook.easyarena3.chatgpt.site/mail
 if (!template.includes('<details id="artist-directory"')) {
   throw new Error("The public playlist is missing the collapsible artist list");
 }
-if (!template.includes('id="artist-buttons" class="artist-directory-columns"')) {
+if (!template.includes('id="artist-buttons" class="artist-directory-columns"') ||
+  !template.includes("artist-category-toggle")) {
   throw new Error("The public playlist is missing the grouped artist list");
 }
 if (!/<select id="artist"><\/select><\/label>\s*<details id="artist-directory"/.test(template) ||
