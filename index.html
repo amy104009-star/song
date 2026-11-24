@@ -285,7 +285,7 @@
     .card .song-title-row { justify-content: flex-start; }
     .card .copy-song-title { min-height: 2rem; }
   }
-  .radio-filters { display: grid; gap: .95rem; margin-bottom: 1.2rem; background: #faf2ddf7; border-color: #ead9ae; min-width: 0; }
+  .radio-filters { display: grid; gap: .45rem; margin-bottom: .9rem; padding: .75rem; background: #faf2ddf7; border-color: #ead9ae; min-width: 0; }
   .screen-reader { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .radio-search { position: relative; display: block; }
   .radio-search input { height: 3.05rem; padding-inline: 2.65rem 1rem; border-radius: 999px; background: #fffdf8; border-color: #ded0c4; box-shadow: 0 3px 9px #4a301515; }
@@ -300,9 +300,8 @@
   .filter-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: .45rem;
-    margin-top: .35rem;
-    padding: .15rem .1rem .29rem;
+    gap: .3rem;
+    margin-top: .2rem;
   }
   .filter-chips button { flex: 0 1 auto; max-width: 100%; overflow-wrap: anywhere; min-height: 2.45rem; padding: .32rem .68rem; border-radius: 999px; border: 1px solid #e4d5ca; background: #fffaf3; color: #523b34; white-space: normal; font-size: .87rem; }
   .filter-chips button[aria-pressed="true"] { background: var(--chip-bg); border-color: var(--chip-bg); color: var(--chip-color); }
@@ -315,7 +314,7 @@
   .announcements { margin-bottom: .9rem; }
   @media (max-width: 37rem) {
     .playlist-header { border-radius: 1.2rem; }
-    .radio-filters { gap: .8rem; }
+    .radio-filters { padding: .65rem; }
     .artist-select select { flex: 1; min-width: 7rem; }
   }
   .site-sidebar { position: fixed; inset: .75rem auto auto .75rem; z-index: 20; color: #422e18; }
@@ -328,9 +327,12 @@
   .search-tools { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .6rem; }
   .search-results-link { display: grid; place-items: center; min-height: 3.05rem; padding-inline: .9rem; border: 1px solid #dbbf85; border-radius: .85rem; background: #fff8e2; color: #5d3b1d; font-size: .9rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
   .search-results-link:hover, #clear-filters:hover { background: #ffedbd; }
-  .radio-filters > .filter-row { padding-top: .75rem; border-top: 1px solid #ead9b3; }
-  .radio-filters .artist-directory summary { padding: .45rem .7rem; border: 1px solid #e5cea0; border-radius: .65rem; background: #fff9eb; }
-  .filter-chips button { min-height: 2.75rem; }
+  .radio-filters > .filter-row { padding-top: .4rem; border-top: 1px solid #ead9b3; }
+  .language-row, .genre-row { display: grid; grid-template-columns: 2.8rem minmax(0, 1fr); align-items: start; }
+  .language-row h2, .genre-row h2 { padding-top: .6rem; white-space: nowrap; }
+  .language-row .filter-chips, .genre-row .filter-chips { margin-top: 0; }
+  .radio-filters .artist-directory summary { padding: .35rem .55rem; border: 1px solid #e5cea0; border-radius: .65rem; background: #fff9eb; }
+  .filter-chips button { min-height: 2.35rem; padding-inline: .55rem; }
   .library-heading { align-items: center; scroll-margin-top: 4.25rem; }
   .library-tools { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; }
   #clear-filters { min-height: 2.5rem; padding: .25rem .65rem; font-size: .85rem; }
