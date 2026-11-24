@@ -265,15 +265,12 @@
   .genre-row { --chip-bg: #a83b55; }
   .filter-chips {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: .45rem;
-    overflow-x: auto;
     margin-top: .35rem;
     padding: .15rem .1rem .29rem;
-    scrollbar-width: thin;
-    scrollbar-color: #d9bfb1 transparent;
   }
-  .filter-chips button { flex: none; min-height: 2.45rem; padding: .32rem .68rem; border-radius: 999px; border: 1px solid #e4d5ca; background: #fffaf3; color: #523b34; white-space: nowrap; font-size: .87rem; }
+  .filter-chips button { flex: 0 1 auto; max-width: 100%; overflow-wrap: anywhere; min-height: 2.45rem; padding: .32rem .68rem; border-radius: 999px; border: 1px solid #e4d5ca; background: #fffaf3; color: #523b34; white-space: normal; font-size: .87rem; }
   .filter-chips button[aria-pressed="true"] { background: var(--chip-bg); border-color: var(--chip-bg); color: var(--chip-color); }
   .filter-chips button:focus-visible { outline-offset: -2px; }
   .radio-filters .artist-directory { margin-top: 0; }
@@ -319,7 +316,7 @@
       <h2 id="genre-filter-title">曲風</h2>
       <div class="filter-chips" id="genre-buttons" role="group" aria-labelledby="genre-filter-title"></div>
     </div>
-    <details id="artist-directory" class="artist-directory filter-row" open>
+    <details id="artist-directory" class="artist-directory filter-row">
       <summary>歌手 <span class="when-closed">展開</span><span class="when-open">收合</span></summary>
       <div class="artist-buttons filter-chips" id="artist-buttons" role="group" aria-label="快速選擇歌手"></div>
       <label class="artist-select">歌手下拉選單<select id="artist"></select></label>
