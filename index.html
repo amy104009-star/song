@@ -53,6 +53,7 @@
   .song-group h2 { font-size: 1.1rem; margin-bottom: .5rem; }
   .card { background: #fffdf7; border: 1px solid #f0d48e; border-radius: .85rem; padding: .75rem; min-width: 0; overflow-wrap: anywhere; }
   .song-title-row { display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
+  .draw-title-row { justify-content: center; }
   .copy-song-title { padding: .2rem .45rem; font-size: .8rem; min-height: 1.8rem; }
   .song-language { display: inline-block; margin-top: .35rem; padding: .1rem .45rem; font-size: .8rem; border: 1px solid #e3ba6b; border-radius: 999px; background: #fff1bd; color: #56350e; }
   .card p, small { color: #735018; }
@@ -293,9 +294,7 @@ function button(label, onClick) {
   return node;
 }
 
-function renderSongCard(song) {
-  const item = element("li", undefined, "card");
-  const title = element("div", undefined, "song-title-row");
+function copySongTitle(song) {
   const copy = button("複製", async () => {
     try {
       await navigator.clipboard.writeText(song.title);
@@ -308,7 +307,13 @@ function renderSongCard(song) {
   });
   copy.className = "copy-song-title";
   copy.setAttribute("aria-label", `複製歌名：${song.title}`);
-  title.append(element("strong", song.title), copy);
+  return copy;
+}
+
+function renderSongCard(song) {
+  const item = element("li", undefined, "card");
+  const title = element("div", undefined, "song-title-row");
+  title.append(element("strong", song.title), copySongTitle(song));
   item.append(title, element("p", song.artist),
     element("span", song.language || "未分類", "song-language"));
   return item;
@@ -369,7 +374,9 @@ function renderDraw() {
   panel.classList.remove("reveal");
   panel.replaceChildren();
   if (result) {
-    panel.append(element("h2", result.song.title), element("p", result.song.artist),
+    const title = element("div", undefined, "song-title-row draw-title-row");
+    title.append(element("h2", result.song.title), copySongTitle(result.song));
+    panel.append(title, element("p", result.song.artist),
       element("small", `分類（歌手） ${artists(result.song).join("、")}`));
     if (result.newRound) panel.append(element("p", "已開始新一輪"));
   }
@@ -420,7 +427,11 @@ $("draw-button").addEventListener("click", () => {
     drawLog.push(song);
     $("draw-history-count").textContent = `（${drawLog.length}）`;
     $("draw-history-empty").hidden = true;
-    $("draw-history-list").prepend(element("li", `${song.title} — ${song.artist}`));
+    const entry = element("li");
+    const title = element("div", undefined, "song-title-row");
+    title.append(element("span", `${song.title} — ${song.artist}`), copySongTitle(song));
+    entry.append(title);
+    $("draw-history-list").prepend(entry);
     renderDraw();
     $("draw-result").classList.add("reveal");
   }
