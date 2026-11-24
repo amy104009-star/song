@@ -22,11 +22,8 @@ if (!template.includes("clipboard.writeText(song.title)") || !template.includes(
 if (!template.includes('class="song-filters radio-filters"') || !template.includes('id="language-buttons"') || !template.includes(".filter-chips {\n    display: flex;\n    flex-wrap: wrap;") || !template.includes('id="library-title"')) {
   throw new Error("The public playlist is missing its header or library layout");
 }
-if (!template.includes("linear-gradient(120deg,#ffe38c,#f4c764)")) {
-  throw new Error("The public playlist is missing its honey-yellow draw button");
-}
-if (!template.includes(".playlist-header::before,") || !template.includes("filter: blur(13px)")) {
-  throw new Error("The public playlist is missing its blurred header photo");
+if (!template.includes(".playlist-header::before,") || !template.includes("center 31% / cover")) {
+  throw new Error("The public playlist is missing its header photo");
 }
 const background = await readFile("public-template/playlist-background.jpg");
 if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
