@@ -5,6 +5,9 @@ const template = await readFile("public-template/index.html", "utf8");
 if (!template.includes("<title>北村歌單</title>")) {
   throw new Error("The public playlist has an unexpected title");
 }
+if (!template.includes('<details id="artist-directory"')) {
+  throw new Error("The public playlist is missing the collapsible artist list");
+}
 const background = await readFile("public-template/playlist-background.jpg");
 if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
   throw new Error("The public template is missing the new songs announcement board");
