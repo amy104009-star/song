@@ -182,32 +182,32 @@
     padding: clamp(2rem, 7vw, 4rem) 1rem;
     border: 1px solid #fff8ee;
     border-radius: 1.65rem;
-    background: radial-gradient(ellipse at 23% 0%, #ffd9dbe6, transparent 65%),
-      radial-gradient(ellipse at 90% 18%, #f4bdc4a1, transparent 56%),
-      linear-gradient(175deg,#fae6df,#fff8eb 75%);
-    box-shadow: 0 13px 37px #48272220;
+    background: radial-gradient(ellipse at 23% 0%, #fff0bce6, transparent 65%),
+      radial-gradient(ellipse at 90% 18%, #f4d28ba1, transparent 56%),
+      linear-gradient(175deg,#ffe8a8,#fff9e8 75%);
+    box-shadow: 0 13px 37px #492d1020;
   }
   .playlist-title { display: grid; justify-items: center; gap: .65rem; }
-  .title-emblem { color: #a83e52; font-family: Georgia, serif; font-size: 1.2rem; letter-spacing: .65em; margin-inline-start: .65em; }
+  .title-emblem { color: #8b611f; font-family: Georgia, serif; font-size: 1.2rem; letter-spacing: .65em; margin-inline-start: .65em; }
   .playlist-header h1 {
     margin: 0;
-    color: #44282a;
+    color: #4a3217;
     font: 800 clamp(2.2rem, 9vw, 5.1rem)/1.1 "Noto Serif TC", "Songti TC", "Microsoft JhengHei", serif;
     letter-spacing: .085em;
     text-align: center;
   }
-  .playlist-header h1 span { color: #a4364e; }
+  .playlist-header h1 span { color: #8b5b16; }
   #open-draw {
     min-height: 3.3rem;
     min-width: min(13rem, 100%);
     padding-inline: 1.45rem;
-    color: #fffdf7;
-    border: 1px solid #9b2d46;
+    color: #4b3213;
+    border: 1px solid #b58126;
     border-radius: 999px;
-    background: linear-gradient(120deg,#b94b60,#8d2941);
-    box-shadow: 0 9px 22px #80283d45;
+    background: linear-gradient(120deg,#ffe38c,#f4c764);
+    box-shadow: 0 9px 22px #85531338;
   }
-  #open-draw:hover { background: #8d2941; }
+  #open-draw:hover { background: #f4c764; }
   .playlist-marquee, .announcements, .song-filters, .library-heading {
     background: var(--paper);
     border: 1px solid var(--line);
@@ -251,18 +251,18 @@
     .card .song-title-row { justify-content: flex-start; }
     .card .copy-song-title { min-height: 2rem; }
   }
-  .radio-filters { display: grid; gap: .95rem; margin-bottom: 1.2rem; background: #fbf4eaf7; border-color: #eee1d9; min-width: 0; }
+  .radio-filters { display: grid; gap: .95rem; margin-bottom: 1.2rem; background: #faf2ddf7; border-color: #ead9ae; min-width: 0; }
   .screen-reader { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .radio-search { position: relative; display: block; }
-  .radio-search input { height: 3.05rem; padding-inline: 2.65rem 1rem; border-radius: 999px; background: #fffdf8; border-color: #ded0c4; box-shadow: 0 3px 9px #4a292315; }
-  .radio-search input::placeholder { color: #785e59; }
-  .search-symbol { position: absolute; top: 1.03rem; left: 1.05rem; width: .73rem; height: .73rem; border: 1.5px solid #654947; border-radius: 50%; pointer-events: none; }
-  .search-symbol::after { content: ""; position: absolute; width: .33rem; height: 1.5px; background: #654947; transform: rotate(48deg); transform-origin: left; left: .53rem; top: .54rem; }
-  .filter-row { min-width: 0; --chip-bg: #513236; --chip-color: #fffaf3; }
+  .radio-search input { height: 3.05rem; padding-inline: 2.65rem 1rem; border-radius: 999px; background: #fffdf8; border-color: #ded0c4; box-shadow: 0 3px 9px #4a301515; }
+  .radio-search input::placeholder { color: #705b39; }
+  .search-symbol { position: absolute; top: 1.03rem; left: 1.05rem; width: .73rem; height: .73rem; border: 1.5px solid #654c27; border-radius: 50%; pointer-events: none; }
+  .search-symbol::after { content: ""; position: absolute; width: .33rem; height: 1.5px; background: #654c27; transform: rotate(48deg); transform-origin: left; left: .53rem; top: .54rem; }
+  .filter-row { min-width: 0; --chip-bg: #624a22; --chip-color: #fffaf3; }
   .filter-row h2, .filter-row summary { font-size: .87rem; letter-spacing: .045em; color: #624c44; font-weight: 740; }
   .filter-row h2::before { content: ""; display: inline-block; width: .48rem; height: .48rem; border-radius: 50%; background: var(--chip-bg); margin-inline-end: .4rem; }
   .language-row { --chip-bg: #ead4a3; --chip-color: #543923; }
-  .genre-row { --chip-bg: #a83b55; }
+  .genre-row { --chip-bg: #e8ba57; --chip-color: #4b3213; }
   .filter-chips {
     display: flex;
     flex-wrap: wrap;
