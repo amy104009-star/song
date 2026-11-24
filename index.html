@@ -47,62 +47,15 @@
   }
   #playlist-marquee[data-height="small"] { min-height: 2.75rem; padding-block: .55rem; }
   #playlist-marquee[data-height="large"] { min-height: clamp(4.5rem, 11vw, 5.75rem); padding-block: 1rem; }
-  #playlist-marquee::before, #playlist-marquee::after {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0;
-  }
-  #playlist-marquee.effect-rays::before {
-    content: "";
-    background:
-      radial-gradient(ellipse at 50% 55%, #fff9dc 0%, transparent 68%),
-      repeating-conic-gradient(from 18deg at 50% 55%, #e2ac46 0 9deg, transparent 12deg 27deg);
-    animation: marquee-radiance 12s ease-in-out infinite;
-  }
-  #playlist-marquee.effect-twinkle::after {
-    content: "";
-    background:
-      radial-gradient(circle at 12% 35%, #fff8d7 0 2px, transparent 4px),
-      radial-gradient(circle at 78% 67%, #fff8d7 0 2px, transparent 4px),
-      radial-gradient(circle at 94% 27%, #fff 0 1px, transparent 3px);
-    animation: marquee-twinkle 8s ease-in-out infinite;
-  }
-  #playlist-marquee .marquee-window { position: relative; z-index: 1; }
-  #playlist-marquee.effect-float { --float-animation: marquee-float; }
-  #playlist-marquee.effect-fade { --fade-animation: marquee-fade; }
   #marquee-text {
     font-size: clamp(1.12rem, 3.5vw, 1.35rem);
-    animation: playlist-scroll var(--scroll-time, 20s) linear infinite,
-      var(--float-animation, none) 6s ease-in-out infinite,
-      var(--fade-animation, none) 12s ease-in-out infinite;
   }
   #playlist-marquee[data-size="small"] #marquee-text { font-size: 1rem; }
   #playlist-marquee[data-size="large"] #marquee-text { font-size: clamp(1.4rem, 5vw, 1.85rem); }
   #playlist-marquee[data-font="serif"] #marquee-text { font-family: "Noto Serif TC", "Songti TC", "PMingLiU", serif; }
   #playlist-marquee[data-font="rounded"] #marquee-text { font-family: "Hiragino Maru Gothic ProN", "PingFang TC", "Microsoft JhengHei", ui-rounded, sans-serif; }
   #playlist-marquee[data-font="handwritten"] #marquee-text { font-family: "Kaiti TC", "DFKai-SB", "KaiTi", cursive; }
-  @keyframes marquee-twinkle {
-    0%, 35%, 70%, 100% { opacity: 0; }
-    18%, 54%, 85% { opacity: .72; }
-  }
-  @keyframes marquee-radiance {
-    0%, 26%, 67%, 100% { opacity: .04; transform: scale(.94); }
-    40%, 58% { opacity: .23; transform: scale(1.12); }
-    49% { opacity: .12; transform: scale(1.04); }
-  }
-  @keyframes marquee-float {
-    0%, 100% { translate: 0 0; }
-    25% { translate: 0 -3px; }
-    75% { translate: 0 3px; }
-  }
-  @keyframes marquee-fade {
-    0%, 100% { opacity: 1; }
-    22%, 78% { opacity: .68; }
-    48%, 56% { opacity: 1; }
-  }
   @media (prefers-reduced-motion: reduce) {
-    #playlist-marquee.effect-rays::before, #playlist-marquee.effect-twinkle::after, #marquee-text { animation: none; }
     .marquee-text { animation: none; padding-inline-start: 0; width: auto; white-space: normal; overflow-wrap: anywhere; }
   }
   .announcements { margin-bottom: 1.4rem; padding: .9rem; border: 1px solid #e3ba6b; border-radius: 1rem; background: #fff4cbe8; }
@@ -444,7 +397,6 @@
 <script id="announcement-data" type="application/json">{"lastAddedAt":1795496137732,"ids":[107,108,109,110,111,112,113,114,115,116]}</script>
 <script id="playlist-message-data" type="application/json">""</script>
 <script id="playlist-message-two-data" type="application/json">""</script>
-<script id="marquee-effects-data" type="application/json">["fade","float","rays","twinkle"]</script>
 <script id="marquee-style-data" type="application/json">{"height":"medium","size":"medium","font":"sans"}</script>
 <script id="language-visibility-data" type="application/json">[]</script>
 <script type="module">
@@ -760,13 +712,6 @@ function renderMarquee(message, suffix = "") {
 
 renderMarquee(JSON.parse($("playlist-message-data").textContent));
 renderMarquee(JSON.parse($("playlist-message-two-data").textContent), "-two");
-function renderMarqueeEffects(effects) {
-  const bar = $("playlist-marquee");
-  for (const effect of ["fade", "float", "rays", "twinkle"]) {
-    bar.classList.toggle("effect-" + effect, effects.includes(effect));
-  }
-}
-renderMarqueeEffects(JSON.parse($("marquee-effects-data").textContent));
 function renderMarqueeStyle(style) {
   const { dataset } = $("playlist-marquee");
   dataset.height = style.height;
@@ -787,10 +732,9 @@ async function loadLatestSongs() {
       signal: AbortSignal.timeout(4500),
     });
     if (!response.ok) return;
-    const { songs: latest, announcements: notice, message, messageTwo, marqueeEffects, marqueeStyle, hiddenLanguages: settings } = await response.json();
+    const { songs: latest, announcements: notice, message, messageTwo, marqueeStyle, hiddenLanguages: settings } = await response.json();
     if (typeof message === "string") renderMarquee(message);
     if (typeof messageTwo === "string") renderMarquee(messageTwo, "-two");
-    if (Array.isArray(marqueeEffects)) renderMarqueeEffects(marqueeEffects);
     if (marqueeStyle) renderMarqueeStyle(marqueeStyle);
     if (!Array.isArray(latest) || !latest.every((song) => song &&
       Number.isSafeInteger(song.id) && typeof song.title === "string" &&
