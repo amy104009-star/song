@@ -37,12 +37,9 @@
   .playlist-marquee { display: flex; align-items: center; gap: .5rem; margin-bottom: 1rem; padding: .45rem .6rem; border: 1px solid #e3ba6b; border-radius: .85rem; background: #fff4cbe8; }
   .marquee-window { flex: 1; min-width: 0; overflow: hidden; }
   .marquee-text { width: max-content; padding-inline-start: 100%; white-space: nowrap; font-weight: 650; animation: playlist-scroll var(--scroll-time, 20s) linear infinite; }
-  .playlist-marquee:hover .marquee-text, .playlist-marquee.is-paused .marquee-text { animation-play-state: paused; }
-  .playlist-marquee button { font-size: .8rem; padding: .15rem .45rem; min-height: 2.4rem; }
   @keyframes playlist-scroll { to { transform: translateX(-100%); } }
   @media (prefers-reduced-motion: reduce) {
     .marquee-text { animation: none; padding-inline-start: 0; width: auto; white-space: normal; overflow-wrap: anywhere; }
-    .playlist-marquee button { display: none; }
   }
   .announcements { margin-bottom: 1.4rem; padding: .9rem; border: 1px solid #e3ba6b; border-radius: 1rem; background: #fff4cbe8; }
   .announcements h2 { font-size: 1.2rem; margin-bottom: .65rem; }
@@ -244,7 +241,6 @@
   </header>
   <section class="playlist-marquee" id="playlist-marquee" aria-label="歌單留言" hidden>
     <div class="marquee-window"><p id="marquee-text" class="marquee-text"></p></div>
-    <button type="button" id="marquee-pause">暫停</button>
   </section>
   <section class="announcements" aria-labelledby="announcements-title">
     <h2 id="announcements-title">📣 新歌公告欄</h2>
@@ -570,10 +566,6 @@ function renderMarquee(message) {
   bar.hidden = !value;
 }
 
-$("marquee-pause").addEventListener("click", () => {
-  const paused = $("playlist-marquee").classList.toggle("is-paused");
-  $("marquee-pause").textContent = paused ? "繼續" : "暫停";
-});
 renderMarquee(JSON.parse($("playlist-message-data").textContent));
 
 updateOptions();
