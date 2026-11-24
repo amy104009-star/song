@@ -60,7 +60,7 @@
   .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
   @media (min-width: 56rem) { .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   .song-groups { display: grid; gap: 1.3rem; }
-  .song-group h2 { font-size: 1.1rem; margin-bottom: .5rem; }
+  .song-group h3 { font-size: 1.1rem; margin-bottom: .5rem; }
   .card { background: #fffdf7; border: 1px solid #f0d48e; border-radius: .85rem; padding: .75rem; min-width: 0; overflow-wrap: anywhere; }
   .song-title-row { display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
   .draw-title-row { justify-content: center; }
@@ -161,14 +161,83 @@
   @media (prefers-reduced-motion: reduce) {
     .bubbles-container { display: none; }
   }
+  /* Public playlist surfaces */
+  :root {
+    --ink: #472c1c;
+    --line: #e8c585;
+    --paper: #fffaf0f2;
+    --panel-shadow: 0 10px 32px #46260c1a;
+    color: var(--ink);
+    font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    line-height: 1.5;
+  }
+  main { width: min(100% - 2rem, 68rem); padding-top: clamp(1rem, 4vw, 2.75rem); }
+  .playlist-header {
+    display: grid;
+    justify-items: center;
+    gap: .85rem;
+    isolation: isolate;
+    padding: clamp(1.35rem, 5vw, 2.5rem) 1rem;
+    border: 1px solid #fff7dacc;
+    border-radius: 1.75rem;
+    background: linear-gradient(142deg, #fff8dcf2 10%, #ffe5a4e6);
+    box-shadow: var(--panel-shadow);
+  }
+  .playlist-header h1 { margin: 0; line-height: 1.15; font-weight: 850; letter-spacing: .04em; }
+  .playlist-header h1 span { font-size: .75em; vertical-align: .06em; letter-spacing: 0; }
+  #open-draw { min-height: 3.15rem; padding-inline: 1.45rem; color: #482b11; border-color: #cf952e; background: linear-gradient(180deg,#ffe28a,#ffd05e); }
+  #open-draw:hover { background: #ffdc7b; }
+  .playlist-marquee, .announcements, .song-filters, .library-heading {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    box-shadow: var(--panel-shadow);
+  }
+  .playlist-marquee, .announcements { border-radius: 1.2rem; }
+  .announcements { padding: clamp(.85rem,3vw,1.2rem); }
+  .announcements h2 { font-size: 1.25rem; }
+  .announcement-list { grid-template-columns: repeat(auto-fit,minmax(min(100%, 10.25rem),1fr)); gap: .6rem; }
+  .announcement-list .card { background: #fff8e7; }
+  .song-filters { padding: clamp(.8rem,3vw,1.15rem); border-radius: 1.2rem; }
+  .filters { gap: .85rem; }
+  .filters label { font-size: .95rem; }
+  .filters input, .filters select { background: #fffef9; }
+  .artist-directory { margin-top: .8rem; }
+  .artist-directory summary { border-color: #e7cd9d; background: #fff5dd; }
+  .artist-directory summary span { color: #735018; font-size: .85rem; }
+  .library-heading { margin: 1.15rem 0 .8rem; padding: .65rem .9rem; border-radius: 1rem; display: flex; flex-wrap: wrap; gap: .25rem 1rem; align-items: baseline; justify-content: space-between; }
+  .library-heading h2 { font-size: 1.15rem; }
+  .library-heading .count { margin: 0; color: #6a4727; font-size: .9rem; font-weight: 650; }
+  .song-groups { gap: 1.25rem; }
+  .song-group h3 { margin: 0 0 .55rem; width: fit-content; border: 1px solid #e3bd77; background: #fff0c7; border-radius: 999px; padding: .2rem .75rem; color: #583817; }
+  .cards { gap: .7rem; }
+  .cards .card, .announcement-list .card { border-color: #e8cfa0; border-radius: .95rem; }
+  .cards .card { background: #fffaf0f5; box-shadow: 0 5px 16px #4b280e12; }
+  .card strong, .card p { display: block; overflow-wrap: anywhere; }
+  .card p { font-size: .89rem; }
+  .card .song-title-row { column-gap: .45rem; justify-content: space-between; }
+  .copy-song-title { color: #67411c; background: #fff7df; border-color: #dcc08d; }
+  .copy-song-title:hover { background: #ffe8aa; }
+  .song-language { background: #f8edda; border-color: #e5caa2; }
+  dialog { border-radius: 1.4rem; box-shadow: 0 20px 65px #3d230947; }
+  .dialog-heading { background: linear-gradient(120deg,#fff1c5,#ffdb85); }
+  #draw-result, #draw-preview { border: 1px solid #edcb82; background: #fff3d2; }
+  @media (max-width: 37rem) {
+    main { width: min(100% - 1.15rem, 68rem); }
+    .playlist-header { border-radius: 1.3rem; }
+    .announcement-list { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .cards, .announcement-list { gap: .5rem; }
+    .card { padding: .55rem; }
+    .card .song-title-row { justify-content: flex-start; }
+    .card .copy-song-title { min-height: 2rem; }
+  }
 </style>
 </head>
 <body>
 <div class="photo-background" aria-hidden="true"></div>
 <div id="floating-background" class="bubbles-container" aria-hidden="true"></div>
 <main>
-  <header>
-    <h1>🌙 北村歌單 🧸</h1>
+  <header class="playlist-header">
+    <h1><span aria-hidden="true">🌙</span> 北村歌單 <span aria-hidden="true">🧸</span></h1>
     <div class="actions">
       <button id="open-draw" class="primary">🎲 隨機選歌</button>
     </div>
@@ -182,6 +251,7 @@
     <ul class="announcement-list" id="new-songs"></ul>
     <p id="no-new-songs" hidden>目前沒有新歌公告</p>
   </section>
+  <section class="song-filters" aria-label="歌單篩選">
   <div class="filters">
     <label>搜尋歌曲或歌手<input id="search" type="search" placeholder="輸入歌名或歌手"></label>
     <label>歌手分類<select id="artist"></select></label>
@@ -190,8 +260,12 @@
     <summary>歌手清單 <span class="when-closed">展開</span><span class="when-open">收合</span></summary>
     <div class="artist-buttons" id="artist-buttons" role="group" aria-label="快速選擇歌手"></div>
   </details>
-  <p class="count" id="count" aria-live="polite"></p>
-  <div id="songs" class="song-groups"></div>
+  </section>
+  <div class="library-heading">
+    <h2 id="library-title">全部歌曲</h2>
+    <p class="count" id="count" aria-live="polite"></p>
+  </div>
+  <div id="songs" class="song-groups" aria-labelledby="library-title"></div>
 </main>
 <dialog id="draw" aria-labelledby="draw-heading">
   <h2 id="draw-heading" class="dialog-heading">🎲 隨機選歌</h2>
@@ -366,7 +440,7 @@ function renderSongs() {
   const sections = [...groups.entries()].sort(([a], [b]) => groupOrder(a) - groupOrder(b));
   $("songs").replaceChildren(...sections.map(([group, entries]) => {
     const section = element("section", undefined, "song-group");
-    const heading = element("h2", group === englishGroup ? "英文歌名" : group ? `${group} 字` : "其他");
+    const heading = element("h3", group === englishGroup ? "英文歌名" : group ? `${group} 字` : "其他");
     const cards = element("ul", undefined, "cards");
     cards.append(...entries.map(renderSongCard));
     section.append(heading, cards);
