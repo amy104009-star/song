@@ -283,6 +283,32 @@ $("draw-button").addEventListener("click", () => {
 updateOptions();
 renderSongs();
 renderDraw();
+
+async function loadLatestSongs() {
+  try {
+    const response = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/songs", {
+      credentials: "omit",
+      signal: AbortSignal.timeout(4500),
+    });
+    if (!response.ok) return;
+    const { songs: latest } = await response.json();
+    if (!Array.isArray(latest) || !latest.every((song) => song &&
+      Number.isSafeInteger(song.id) && typeof song.title === "string" &&
+      typeof song.artist === "string") ||
+      new Set(latest.map((song) => song.id)).size !== latest.length ||
+      JSON.stringify(latest) === JSON.stringify(songs)) return;
+    songs = latest;
+    history.clear();
+    result = null;
+    updateOptions();
+    renderSongs();
+    renderDraw();
+  } catch {
+    // Show the published snapshot if the live source is unreachable.
+  }
+}
+
+void loadLatestSongs();
 </script>
 </body>
 </html>
