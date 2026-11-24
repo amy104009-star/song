@@ -12,6 +12,9 @@ if (!template.includes('<details id="artist-directory"')) {
 if (!template.includes('<details id="draw-history"')) {
   throw new Error("The public playlist is missing the collapsible draw history");
 }
+if (!template.includes('id="draw-preview"')) {
+  throw new Error("The public playlist is missing the draw animation");
+}
 const background = await readFile("public-template/playlist-background.jpg");
 if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
   throw new Error("The public template is missing the new songs announcement board");
