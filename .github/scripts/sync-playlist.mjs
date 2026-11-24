@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile, appendFile } from "node:fs/promises";
 
 const seedPattern = /(<script id="seed" type="application\/json">)([\s\S]*?)(<\/script>)/;
 const template = await readFile("public-template/index.html", "utf8");
-if (!template.includes("<title>歌單</title>")) {
+if (!template.includes("<title>北村歌單</title>")) {
   throw new Error("The public playlist has an unexpected title");
 }
 const background = await readFile("public-template/playlist-background.jpg");
