@@ -52,6 +52,8 @@
   .song-groups { display: grid; gap: 1.3rem; }
   .song-group h2 { font-size: 1.1rem; margin-bottom: .5rem; }
   .card { background: #fffdf7; border: 1px solid #f0d48e; border-radius: .85rem; padding: .75rem; min-width: 0; overflow-wrap: anywhere; }
+  .song-title-row { display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
+  .copy-song-title { padding: .2rem .45rem; font-size: .8rem; min-height: 1.8rem; }
   .song-language { display: inline-block; margin-top: .35rem; padding: .1rem .45rem; font-size: .8rem; border: 1px solid #e3ba6b; border-radius: 999px; background: #fff1bd; color: #56350e; }
   .card p, small { color: #735018; }
   dialog { width: min(100% - 2rem, 34rem); max-height: calc(100dvh - 2rem); border: 1px solid #e3ba6b; border-radius: 1rem; padding: 0; background: #fffdf4; color: inherit; box-shadow: 0 1rem 3rem #4c2a2039; }
@@ -293,7 +295,21 @@ function button(label, onClick) {
 
 function renderSongCard(song) {
   const item = element("li", undefined, "card");
-  item.append(element("strong", song.title), element("p", song.artist),
+  const title = element("div", undefined, "song-title-row");
+  const copy = button("複製", async () => {
+    try {
+      await navigator.clipboard.writeText(song.title);
+      copy.textContent = "已複製";
+      setTimeout(() => { copy.textContent = "複製"; }, 1600);
+    } catch {
+      copy.textContent = "複製失敗";
+      setTimeout(() => { copy.textContent = "複製"; }, 2000);
+    }
+  });
+  copy.className = "copy-song-title";
+  copy.setAttribute("aria-label", `複製歌名：${song.title}`);
+  title.append(element("strong", song.title), copy);
+  item.append(title, element("p", song.artist),
     element("span", song.language || "未分類", "song-language"));
   return item;
 }
