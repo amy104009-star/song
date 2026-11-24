@@ -1,6 +1,11 @@
 name: Sync public playlist to GitHub Pages
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy.yml'
+      - '.github/scripts/sync-playlist.mjs'
   workflow_dispatch:
   schedule:
     - cron: '7,22,37,52 * * * *'
