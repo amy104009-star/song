@@ -12,7 +12,7 @@ if (!template.includes('<details id="artist-directory"')) {
 if (!template.includes('<details id="draw-history"')) {
   throw new Error("The public playlist is missing the collapsible draw history");
 }
-if (!template.includes('id="draw-preview"') || !template.includes("const drawDuration = 5000;")) {
+if (!template.includes('id="draw-preview"') || !template.includes("const drawDuration = 3500;")) {
   throw new Error("The public playlist is missing the draw animation");
 }
 const background = await readFile("public-template/playlist-background.jpg");
