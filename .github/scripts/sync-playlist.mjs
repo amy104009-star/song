@@ -26,8 +26,8 @@ if (!template.includes(".playlist-header::before,") || !template.includes("cente
   throw new Error("The public playlist is missing its header photo");
 }
 const background = await readFile("public-template/playlist-background.jpg");
-if (!/\.photo-background \{[^}]*opacity: \.7;/.test(template)) {
-  throw new Error("The page backdrop must use 70% opacity");
+if (!/\.photo-background \{[^}]*opacity: \.3;/.test(template)) {
+  throw new Error("The page backdrop must use 30% opacity");
 }
 const pageBackground = await readFile("public-template/playlist-page-background.jpg");
 if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
