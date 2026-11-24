@@ -63,6 +63,7 @@
   .draw-title-row { justify-content: center; }
   .copy-song-title { padding: .2rem .45rem; font-size: .8rem; min-height: 1.8rem; }
   .song-language { display: inline-block; margin-top: .35rem; padding: .1rem .45rem; font-size: .8rem; border: 1px solid #e3ba6b; border-radius: 999px; background: #fff1bd; color: #56350e; }
+  .song-genre { margin-inline-start: .35rem; background: #fff0c8; }
   .card p, small { color: #735018; }
   dialog { width: min(100% - 2rem, 34rem); max-height: calc(100dvh - 2rem); border: 1px solid #e3ba6b; border-radius: 1rem; padding: 0; background: #fffdf4; color: inherit; box-shadow: 0 1rem 3rem #4c2a2039; }
   dialog::backdrop { background: #35250c70; }
@@ -251,6 +252,7 @@
   <div class="filters">
     <label>搜尋歌曲或歌手<input id="search" type="search" placeholder="輸入歌名或歌手"></label>
     <label>歌手分類<select id="artist"></select></label>
+    <label>曲風<select id="genre"></select></label>
   </div>
   <details id="artist-directory" class="artist-directory">
     <summary>歌手清單 <span class="when-closed">展開</span><span class="when-open">收合</span></summary>
@@ -328,6 +330,8 @@ function titleLength(title) {
 }
 
 const seed = JSON.parse($("seed").textContent);
+const genreOptions = ["抒情", "輕快", "動感舞曲", "搖滾", "饒舌", "古風"];
+$("genre").replaceChildren(new Option("全部曲風", ""), ...genreOptions.map((genre) => new Option(genre, genre)));
 const history = new Map();
 const drawLog = [];
 const drawDuration = 3500;
@@ -401,6 +405,7 @@ function renderSongCard(song) {
   title.append(element("strong", song.title), copySongTitle(song));
   item.append(title, element("p", song.artist),
     element("span", song.language || "未分類", "song-language"));
+  if (song.genre) item.append(element("span", song.genre, "song-language song-genre"));
   return item;
 }
 
@@ -423,8 +428,9 @@ function renderSongs() {
   for (const choice of $("artist-buttons").children) {
     choice.setAttribute("aria-pressed", String(choice.dataset.artist === group));
   }
+  const genre = $("genre").value;
   const visible = songs.filter((song) =>
-    (!group || artists(song).includes(group)) && matches(song, $("search"))
+    (!group || artists(song).includes(group)) && (!genre || song.genre === genre) && matches(song, $("search"))
   );
   $("count").textContent = visible.length ? `共 ${visible.length} 首歌` : "找不到歌曲";
   const groups = new Map();
@@ -469,6 +475,7 @@ function renderDraw() {
 
 $("search").addEventListener("input", renderSongs);
 $("artist").addEventListener("change", renderSongs);
+$("genre").addEventListener("change", renderSongs);
 $("open-draw").addEventListener("click", () => $("draw").showModal());
 document.querySelectorAll("[data-close]").forEach((node) => {
   node.addEventListener("click", () => $(node.dataset.close).close());
