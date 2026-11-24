@@ -22,7 +22,7 @@ if (!template.includes("clipboard.writeText(song.title)") || !template.includes(
 if (!template.includes('class="song-filters radio-filters"') || !template.includes('id="language-buttons"') || !template.includes(".filter-chips {\n    display: flex;\n    flex-wrap: wrap;") || !template.includes('id="library-title"')) {
   throw new Error("The public playlist is missing its header or library layout");
 }
-if (!template.includes(".playlist-header::before,") || !template.includes("center 31% / cover")) {
+if (!template.includes(".playlist-header::before,") || !template.includes("center 31% / cover") || !template.includes("align-content: space-between;")) {
   throw new Error("The public playlist is missing its header photo");
 }
 const background = await readFile("public-template/playlist-background.jpg");
