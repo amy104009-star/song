@@ -76,13 +76,15 @@ if (!visibilityPattern.test(template) || !Array.isArray(hiddenLanguages) ||
   !hiddenLanguages.every((language) => languages.has(language))) {
   throw new Error("Playlist language visibility is invalid");
 }
-const messageData = JSON.stringify(message).replaceAll("<", "\\u003c");
-const messageTwoData = JSON.stringify(messageTwo).replaceAll("<", "\\u003c");
-const page = template
+const marqueeData = [
+  [messagePattern, message],
+  [messageTwoPattern, messageTwo],
+  [effectsPattern, marqueeEffects],
+];
+const templateWithMarquees = marqueeData.reduce((html, [pattern, value]) =>
+  html.replace(pattern, (_, start, end) => start + JSON.stringify(value).replaceAll("<", "\\u003c") + end), template);
+const page = templateWithMarquees
   .replace(visibilityPattern, (_, start, end) => start + JSON.stringify(hiddenLanguages) + end)
-  .replace(messagePattern, (_, start, end) => start + messageData + end)
-  .replace(messageTwoPattern, (_, start, end) => start + messageTwoData + end)
-  .replace(effectsPattern, (_, start, end) => start + JSON.stringify(marqueeEffects) + end)
   .replace(seedPattern, (_, start, __, end) => start + seed + end)
   .replace(announcementPattern, (_, start, end) => start + notice + end);
 
