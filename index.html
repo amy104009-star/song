@@ -573,8 +573,12 @@ function updateOptions() {
     heading.id = group.id + "-title";
     group.setAttribute("aria-labelledby", heading.id);
     const toggle = button(label, () => {
-      group.hidden = !group.hidden;
-      toggle.setAttribute("aria-expanded", String(!group.hidden));
+      const opening = group.hidden;
+      for (const [index, panel] of panels.entries()) {
+        const active = opening && panel === group;
+        panel.hidden = !active;
+        toggles[index].setAttribute("aria-expanded", String(active));
+      }
     });
     toggle.className = "artist-category-toggle";
     toggle.setAttribute("aria-controls", group.id);
