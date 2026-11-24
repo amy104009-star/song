@@ -132,6 +132,12 @@
   <div class="filters">
     <label>搜尋歌曲或歌手<input id="search" type="search" placeholder="輸入歌名或歌手"></label>
     <label>歌手分類<select id="artist"></select></label>
+    <label>歌曲範圍
+      <select id="recent">
+        <option value="">全部歌曲</option>
+        <option value="latest">新加入歌曲（最近 10 首）</option>
+      </select>
+    </label>
   </div>
   <div class="artist-buttons" id="artist-buttons" role="group" aria-label="快速選擇歌手"></div>
   <p class="count" id="count" aria-live="polite"></p>
@@ -220,7 +226,8 @@ function renderSongs() {
   for (const choice of $("artist-buttons").children) {
     choice.setAttribute("aria-pressed", String(choice.dataset.artist === group));
   }
-  const visible = songs.filter((song) =>
+  const selection = $("recent").value === "latest" ? songs.slice(-10).reverse() : songs;
+  const visible = selection.filter((song) =>
     (!group || artists(song).includes(group)) && matches(song, $("search"))
   );
   $("count").textContent = visible.length ? `共 ${visible.length} 首歌` : "找不到歌曲";
@@ -253,6 +260,7 @@ function renderDraw() {
 
 $("search").addEventListener("input", renderSongs);
 $("artist").addEventListener("change", renderSongs);
+$("recent").addEventListener("change", renderSongs);
 $("open-draw").addEventListener("click", () => $("draw").showModal());
 document.querySelectorAll("[data-close]").forEach((node) => {
   node.addEventListener("click", () => $(node.dataset.close).close());
