@@ -25,6 +25,9 @@ if (!template.includes('class="song-filters radio-filters"') || !template.includ
 if (!template.includes("linear-gradient(120deg,#ffe38c,#f4c764)")) {
   throw new Error("The public playlist is missing its honey-yellow draw button");
 }
+if (!template.includes(".playlist-header::before,") || !template.includes("filter: blur(13px)")) {
+  throw new Error("The public playlist is missing its blurred header photo");
+}
 const background = await readFile("public-template/playlist-background.jpg");
 if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
   throw new Error("The public template is missing the new songs announcement board");
