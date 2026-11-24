@@ -511,11 +511,13 @@ function matches(song, input) {
 }
 
 const artistCategories = [
-  ["內地男歌手", "加木|早安|江皓南|艾辰|宋冬野|杜宣達|汪蘇瀧|周深|周星星|胡夏|要不要買菜|海來阿木|秦海清|張杰|張遠|郭頂|薛之謙|h3r3劉青雲|LBI 利比"],
+  ["內地男歌手", "加木|早安|江皓南|艾辰|宋冬野|杜宣達|汪蘇瀧|周深|周星星|伯爵 Johnny|胡夏|要不要買菜|海來阿木|秦海清|崔洋|張杰|張遠|郭頂|薛之謙|h3r3劉青雲|LBI 利比"],
   ["內地女歌手", "于文文|于冬然|于果|小阿七|王靖雯不胖|任然|周林楓|季彥霖|邵雨涵|金漁|阿涵|郁可唯|崔子格|許佳慧|陳一發兒|陳粒|陳雪凝|陳壹千|曾惜|買辣椒也用券|黃齡|葉炫清|盧盧快閉嘴|戴羽彤|張碧晨"],
   ["港台男歌手", "王力宏|周杰倫|周傳雄|周興哲|邱振哲|范逸臣|庾澄慶|張信哲|楊宗緯|蕭秉治|鬆緊先生|Tank"],
-  ["港台女歌手", "王心凌|王菲|王詩安|田馥甄|江語晨|李翊君|家家|徐佳瑩|張芸京|張惠妹|張韶涵|郭靜|陳忻玥|陳芳語|楊千嬅|楊丞琳|溫嵐|詹雯婷|蔡依林|鄧紫棋|A-Lin|JC 陳詠桐"],
+  ["港台女歌手", "王心凌|王菲|王詩安|田馥甄|江語晨|李翊君|孫盛希|家家|徐佳瑩|張芸京|張惠妹|張韶涵|郭靜|陳忻玥|陳芳語|楊千嬅|楊丞琳|溫嵐|詹雯婷|蔡依林|鄧紫棋|A-Lin|JC 陳詠桐"],
   ["團體歌手", "五月天|告五人|芭比|南拳媽媽|音闕詩聽|aespa|Beyond|BY2"],
+  ["新馬歌手", "林俊傑|梁靜茹|陳潔儀"],
+  ["美國歌手", "唐伯虎 Annie"],
 ].map(([label, names]) => [label, new Set(names.split("|"))]);
 
 function updateOptions() {
@@ -546,7 +548,7 @@ function updateOptions() {
     groupNames.forEach((name) => remaining.delete(name));
     groups.push([label, groupNames]);
   }
-  if (remaining.size) groups.push(["其他歌手", [...remaining]]);
+  if (remaining.size) groups.push(["資料待確認", [...remaining]]);
   $("artist-buttons").replaceChildren(artistButton(""), ...groups.filter(([, members]) => members.length).map(([label, members]) => {
     const group = element("section", undefined, "artist-category");
     const choices = element("div", undefined, "artist-buttons filter-chips");
