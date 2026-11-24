@@ -27,6 +27,10 @@
   header .actions { justify-content: center; }
   .filters > label { flex: 1 1 13rem; }
   .count { margin: .8rem 0; }
+  .announcements { margin-bottom: 1.4rem; padding: .9rem; border: 1px solid #e3ba6b; border-radius: 1rem; background: #fff4cbe8; }
+  .announcements h2 { font-size: 1.2rem; margin-bottom: .65rem; }
+  .announcement-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: .45rem; }
+  .announcement-list .card { padding: .5rem .65rem; }
   .artist-buttons { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1rem; }
   .artist-buttons button { border-radius: 999px; overflow-wrap: anywhere; max-width: 100%; }
   .artist-buttons button[aria-pressed="true"] { background: #ffda72; border-color: #a36d20; }
@@ -129,15 +133,14 @@
       <button id="open-draw" class="primary">🎲 隨機選歌</button>
     </div>
   </header>
+  <section class="announcements" aria-labelledby="announcements-title">
+    <h2 id="announcements-title">📣 新歌公告欄</h2>
+    <ul class="announcement-list" id="new-songs"></ul>
+    <p id="no-new-songs" hidden>目前沒有歌曲</p>
+  </section>
   <div class="filters">
     <label>搜尋歌曲或歌手<input id="search" type="search" placeholder="輸入歌名或歌手"></label>
     <label>歌手分類<select id="artist"></select></label>
-    <label>歌曲範圍
-      <select id="recent">
-        <option value="">全部歌曲</option>
-        <option value="latest">新加入歌曲（最近 10 首）</option>
-      </select>
-    </label>
   </div>
   <div class="artist-buttons" id="artist-buttons" role="group" aria-label="快速選擇歌手"></div>
   <p class="count" id="count" aria-live="polite"></p>
@@ -221,13 +224,22 @@ function button(label, onClick) {
   return node;
 }
 
+function renderAnnouncements() {
+  const recent = songs.slice(-10).reverse();
+  $("no-new-songs").hidden = recent.length > 0;
+  $("new-songs").replaceChildren(...recent.map((song) => {
+    const item = element("li", undefined, "card");
+    item.append(element("strong", song.title), element("p", song.artist));
+    return item;
+  }));
+}
+
 function renderSongs() {
   const group = $("artist").value;
   for (const choice of $("artist-buttons").children) {
     choice.setAttribute("aria-pressed", String(choice.dataset.artist === group));
   }
-  const selection = $("recent").value === "latest" ? songs.slice(-10).reverse() : songs;
-  const visible = selection.filter((song) =>
+  const visible = songs.filter((song) =>
     (!group || artists(song).includes(group)) && matches(song, $("search"))
   );
   $("count").textContent = visible.length ? `共 ${visible.length} 首歌` : "找不到歌曲";
@@ -260,7 +272,6 @@ function renderDraw() {
 
 $("search").addEventListener("input", renderSongs);
 $("artist").addEventListener("change", renderSongs);
-$("recent").addEventListener("change", renderSongs);
 $("open-draw").addEventListener("click", () => $("draw").showModal());
 document.querySelectorAll("[data-close]").forEach((node) => {
   node.addEventListener("click", () => $(node.dataset.close).close());
@@ -289,6 +300,7 @@ $("draw-button").addEventListener("click", () => {
   renderDraw();
 });
 updateOptions();
+renderAnnouncements();
 renderSongs();
 renderDraw();
 
@@ -309,6 +321,7 @@ async function loadLatestSongs() {
     history.clear();
     result = null;
     updateOptions();
+    renderAnnouncements();
     renderSongs();
     renderDraw();
   } catch {
