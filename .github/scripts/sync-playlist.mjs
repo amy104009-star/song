@@ -8,6 +8,9 @@ if (!template.includes("<title>北村歌單</title>")) {
 if (!template.includes('<details id="artist-directory"')) {
   throw new Error("The public playlist is missing the collapsible artist list");
 }
+if (!template.includes('<details id="draw-history"')) {
+  throw new Error("The public playlist is missing the collapsible draw history");
+}
 const background = await readFile("public-template/playlist-background.jpg");
 if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
   throw new Error("The public template is missing the new songs announcement board");
