@@ -15,6 +15,9 @@ if (!template.includes('<details id="draw-history"')) {
 if (!template.includes('id="draw-preview"') || !template.includes("const drawDuration = 3500;")) {
   throw new Error("The public playlist is missing the draw animation");
 }
+if (!template.includes("clipboard.writeText(song.title)")) {
+  throw new Error("The public playlist is missing the song title copy button");
+}
 const background = await readFile("public-template/playlist-background.jpg");
 if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
   throw new Error("The public template is missing the new songs announcement board");
