@@ -9,7 +9,7 @@ const response = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/
   signal: AbortSignal.timeout(20000),
 });
 if (!response.ok) throw new Error(`Playlist request failed: ${response.status}`);
-const { songs, revision } = await response.json();
+const { songs, revision, announcements } = await response.json();
 if (!Number.isSafeInteger(revision) || revision < 0 || !Array.isArray(songs) ||
   songs.length > 2000 || !songs.every((song) => song &&
     Number.isSafeInteger(song.id) && song.id > 0 &&
@@ -19,7 +19,16 @@ if (!Number.isSafeInteger(revision) || revision < 0 || !Array.isArray(songs) ||
 }
 if (!seedPattern.test(template)) throw new Error("The page template is missing its embedded playlist");
 const seed = JSON.stringify(songs.map(({ id, title, artist }) => ({ id, title, artist }))).replaceAll("<", "\\u003c");
-const page = template.replace(seedPattern, (_, start, __, end) => start + seed + end);
+const announcementPattern = /(<script id="announcement-data" type="application\/json">)[\s\S]*?(<\/script>)/;
+if (!announcementPattern.test(template) || !announcements ||
+  !Number.isSafeInteger(announcements.lastAddedAt) || !Array.isArray(announcements.ids) ||
+  !announcements.ids.every(Number.isSafeInteger)) {
+  throw new Error("Announcement metadata is missing or invalid");
+}
+const notice = JSON.stringify({ lastAddedAt: announcements.lastAddedAt, ids: announcements.ids });
+const page = template
+  .replace(seedPattern, (_, start, __, end) => start + seed + end)
+  .replace(announcementPattern, (_, start, end) => start + notice + end);
 
 let unchanged = false;
 if (process.env.GITHUB_EVENT_NAME === "schedule") {
