@@ -11,6 +11,7 @@ on:
     - cron: '7,22,37,52 * * * *'
 
 permissions:
+  actions: read
   contents: read
   pages: write
   id-token: write
@@ -44,6 +45,19 @@ jobs:
         if: steps.snapshot.outputs.publish == 'true'
         with:
           path: site-dist
+      - name: Wait for GitHub to list the uploaded artifact
+        if: steps.snapshot.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for attempt in {1..12}; do
+            if gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts" --jq '.artifacts[] | select(.name == "github-pages" and .expired == false) | .id' | grep -q .; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "GitHub did not list the uploaded Pages artifact" >&2
+          exit 1
       - uses: actions/deploy-pages@v4
         if: steps.snapshot.outputs.publish == 'true'
         id: deploy
