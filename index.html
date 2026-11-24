@@ -38,6 +38,11 @@
   .announcements h2 { font-size: 1.2rem; margin-bottom: .65rem; }
   .announcement-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: .45rem; }
   .announcement-list .card { padding: .5rem .65rem; }
+  .artist-directory { margin-top: 1rem; }
+  .artist-directory summary { cursor: pointer; padding: .6rem .8rem; border: 1px solid #e3ba6b; border-radius: .75rem; background: #fffdf4; font-weight: 650; }
+  .artist-directory summary:focus-visible { outline: 3px solid #966514; outline-offset: 2px; }
+  .artist-directory summary span { margin-inline-start: .5rem; font-weight: 400; }
+  .artist-directory:not([open]) .when-open, .artist-directory[open] .when-closed { display: none; }
   .artist-buttons { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1rem; }
   .artist-buttons button { border-radius: 999px; overflow-wrap: anywhere; max-width: 100%; }
   .artist-buttons button[aria-pressed="true"] { background: #ffda72; border-color: #a36d20; }
@@ -150,7 +155,10 @@
     <label>搜尋歌曲或歌手<input id="search" type="search" placeholder="輸入歌名或歌手"></label>
     <label>歌手分類<select id="artist"></select></label>
   </div>
-  <div class="artist-buttons" id="artist-buttons" role="group" aria-label="快速選擇歌手"></div>
+  <details id="artist-directory" class="artist-directory">
+    <summary>歌手清單 <span class="when-closed">展開</span><span class="when-open">收合</span></summary>
+    <div class="artist-buttons" id="artist-buttons" role="group" aria-label="快速選擇歌手"></div>
+  </details>
   <p class="count" id="count" aria-live="polite"></p>
   <ul class="cards" id="songs"></ul>
 </main>
