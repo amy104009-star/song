@@ -70,6 +70,10 @@
   .artist-buttons { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1rem; }
   .artist-buttons button { border-radius: 999px; overflow-wrap: anywhere; max-width: 100%; }
   .artist-buttons button[aria-pressed="true"] { background: #ffda72; border-color: #a36d20; }
+  .artist-directory-groups { display: grid; gap: .75rem; margin-top: .6rem; }
+  .artist-category { min-width: 0; padding: .65rem .75rem; border: 1px solid #e5cea0; border-radius: .8rem; background: #fffbef; }
+  .artist-category h3 { margin: 0; font-size: .92rem; }
+  .artist-category .artist-buttons { margin-top: .35rem; }
   ul { list-style: none; padding: 0; margin: 0; }
   .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
   @media (min-width: 56rem) { .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
@@ -390,7 +394,7 @@
     <label class="artist-select">歌手下拉選單<select id="artist"></select></label>
     <details id="artist-directory" class="artist-directory filter-row">
       <summary>歌手 <span class="when-closed">展開</span><span class="when-open">收合</span></summary>
-      <div class="artist-buttons filter-chips" id="artist-buttons" role="group" aria-label="快速選擇歌手"></div>
+      <div id="artist-buttons" class="artist-directory-groups" aria-label="依分類選擇歌手"></div>
     </details>
   </section>
   <section class="announcements" aria-labelledby="announcements-title">
@@ -506,6 +510,14 @@ function matches(song, input) {
   return [song.title, song.artist].some((value) => value.toLocaleLowerCase().includes(query));
 }
 
+const artistCategories = [
+  ["內地男歌手", "加木|早安|江皓南|艾辰|宋冬野|杜宣達|汪蘇瀧|周深|周星星|胡夏|要不要買菜|海來阿木|秦海清|張杰|張遠|郭頂|薛之謙|h3r3劉青雲|LBI 利比"],
+  ["內地女歌手", "于文文|于冬然|于果|小阿七|王靖雯不胖|任然|周林楓|季彥霖|邵雨涵|金漁|阿涵|郁可唯|崔子格|許佳慧|陳一發兒|陳粒|陳雪凝|陳壹千|曾惜|買辣椒也用券|黃齡|葉炫清|盧盧快閉嘴|戴羽彤|張碧晨"],
+  ["港台男歌手", "王力宏|周杰倫|周傳雄|周興哲|邱振哲|范逸臣|庾澄慶|張信哲|楊宗緯|蕭秉治|鬆緊先生|Tank"],
+  ["港台女歌手", "王心凌|王菲|王詩安|田馥甄|江語晨|李翊君|家家|徐佳瑩|張芸京|張惠妹|張韶涵|郭靜|陳忻玥|陳芳語|楊千嬅|楊丞琳|溫嵐|詹雯婷|蔡依林|鄧紫棋|A-Lin|JC 陳詠桐"],
+  ["團體歌手", "五月天|告五人|芭比|南拳媽媽|音闕詩聽|aespa|Beyond|BY2"],
+].map(([label, names]) => [label, new Set(names.split("|"))]);
+
 function updateOptions() {
   const names = [...new Set(songs.flatMap(artists))].sort((a, b) => a.localeCompare(b, "zh-Hant"));
   for (const id of ["artist", "scope"]) {
@@ -519,13 +531,28 @@ function updateOptions() {
     for (const artist of new Set(artists(song))) artistCounts.set(artist, (artistCounts.get(artist) ?? 0) + 1);
   }
   const prioritized = [...names].sort((a, b) => artistCounts.get(b) - artistCounts.get(a));
-  $("artist-buttons").replaceChildren(...["", ...prioritized].map((name) => {
-    const choice = button(name || "所有歌手", () => {
+  const artistButton = (name) => {
+    const choice = button(name || "全部歌手", () => {
       $("artist").value = name;
       renderSongs();
     });
     choice.dataset.artist = name;
     return choice;
+  };
+  const remaining = new Set(prioritized);
+  const groups = [];
+  for (const [label, members] of artistCategories) {
+    const groupNames = prioritized.filter((name) => members.has(name));
+    groupNames.forEach((name) => remaining.delete(name));
+    groups.push([label, groupNames]);
+  }
+  if (remaining.size) groups.push(["其他歌手", [...remaining]]);
+  $("artist-buttons").replaceChildren(artistButton(""), ...groups.filter(([, members]) => members.length).map(([label, members]) => {
+    const group = element("section", undefined, "artist-category");
+    const choices = element("div", undefined, "artist-buttons filter-chips");
+    choices.append(...members.map(artistButton));
+    group.append(element("h3", label), choices);
+    return group;
   }));
 }
 
@@ -601,7 +628,7 @@ function renderSongs() {
     }
   }
   const group = $("artist").value;
-  for (const choice of $("artist-buttons").children) {
+  for (const choice of $("artist-buttons").querySelectorAll("[data-artist]")) {
     choice.setAttribute("aria-pressed", String(choice.dataset.artist === group));
   }
   const { language, genre } = filters;
