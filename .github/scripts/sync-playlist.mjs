@@ -25,7 +25,8 @@ if (!template.includes('id="draw-preview"') || !template.includes("const drawDur
 if (!template.includes("clipboard.writeText(song.title)") || !template.includes("copySongTitle(result.song)")) {
   throw new Error("The public playlist is missing the song title copy button");
 }
-if (!template.includes('class="song-filters radio-filters"') || !template.includes('id="language-buttons"') || !template.includes(".filter-chips {\n    display: flex;\n    flex-wrap: wrap;") || !template.includes('id="library-title"')) {
+if (!template.includes('class="song-filters radio-filters"') || !template.includes('id="language-buttons"') ||
+  !template.includes('id="genre-buttons"') || !template.includes('id="library-title"')) {
   throw new Error("The public playlist is missing its header or library layout");
 }
 if (!template.includes('id="clear-filters"') || !template.includes('href="#library-results"')) {
