@@ -322,10 +322,29 @@
   .site-sidebar summary { cursor: pointer; width: fit-content; padding: .45rem .7rem; border: 1px solid #d7b66c; border-radius: .7rem; background: #fff8df; font-weight: 650; }
   .site-sidebar nav { margin-top: .4rem; border: 1px solid #d7b66c; border-radius: .8rem; background: #fff8df; box-shadow: 0 .4rem 1.5rem #452b2226; }
   .site-sidebar a { display: block; padding: .75rem 1.2rem; color: inherit; }
+  .site-sidebar a + a { border-top: 1px solid #ead6ab; }
+  .site-sidebar a:hover { background: #ffeec8; }
+  .site-sidebar nav { overflow: hidden; }
+  .search-tools { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .6rem; }
+  .search-results-link { display: grid; place-items: center; min-height: 3.05rem; padding-inline: .9rem; border: 1px solid #dbbf85; border-radius: .85rem; background: #fff8e2; color: #5d3b1d; font-size: .9rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
+  .search-results-link:hover, #clear-filters:hover { background: #ffedbd; }
+  .radio-filters > .filter-row { padding-top: .75rem; border-top: 1px solid #ead9b3; }
+  .radio-filters .artist-directory summary { padding: .45rem .7rem; border: 1px solid #e5cea0; border-radius: .65rem; background: #fff9eb; }
+  .filter-chips button { min-height: 2.75rem; }
+  .library-heading { align-items: center; scroll-margin-top: 4.25rem; }
+  .library-tools { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; }
+  #clear-filters { min-height: 2.5rem; padding: .25rem .65rem; font-size: .85rem; }
+  .songs-empty { padding: 1.25rem; border: 1px solid var(--line); border-radius: 1rem; background: var(--paper); color: #6a4727; }
+  .cards .card { display: grid; align-content: start; gap: .3rem; }
+  .card .copy-song-title { min-height: 2.75rem; }
+  @media (max-width: 24rem) {
+    .search-results-link { padding-inline: .6rem; }
+    .card .song-title-row { gap: .35rem; }
+  }
 </style>
 </head>
 <body>
-<details class="site-sidebar">
+<details id="site-menu" class="site-sidebar">
   <summary>☰ 選單</summary>
   <nav aria-label="側邊選單">
     <a href="https://lili-songbook.easyarena3.chatgpt.site/requests">存單查詢</a>
@@ -350,11 +369,14 @@
     <div class="marquee-window"><p id="marquee-text-two" class="marquee-text"></p></div>
   </section>
   <section class="song-filters radio-filters" aria-label="歌單篩選">
-    <label class="radio-search">
-      <span class="screen-reader">搜尋歌曲或歌手</span>
-      <span class="search-symbol" aria-hidden="true"></span>
-      <input id="search" type="search" placeholder="搜尋歌名或歌手…">
-    </label>
+    <div class="search-tools">
+      <label class="radio-search">
+        <span class="screen-reader">搜尋歌曲或歌手</span>
+        <span class="search-symbol" aria-hidden="true"></span>
+        <input id="search" type="search" placeholder="搜尋歌名或歌手…" enterkeyhint="search">
+      </label>
+      <a class="search-results-link" href="#library-results">看歌曲</a>
+    </div>
     <div class="filter-row language-row">
       <h2 id="language-filter-title">語言</h2>
       <div class="filter-chips" id="language-buttons" role="group" aria-labelledby="language-filter-title"></div>
@@ -374,10 +396,14 @@
     <ul class="announcement-list" id="new-songs"></ul>
     <p id="no-new-songs" hidden>目前沒有新歌公告</p>
   </section>
-  <div class="library-heading">
+  <div class="library-heading" id="library-results">
     <h2 id="library-title">全部歌曲</h2>
-    <p class="count" id="count" aria-live="polite"></p>
+    <div class="library-tools">
+      <p class="count" id="count" aria-live="polite"></p>
+      <button type="button" id="clear-filters" hidden>清除篩選</button>
+    </div>
   </div>
+  <p id="songs-empty" class="songs-empty" hidden>沒有符合的歌曲。可以換個關鍵字，或清除篩選再試。</p>
   <div id="songs" class="song-groups" aria-labelledby="library-title"></div>
 </main>
 <dialog id="draw" aria-labelledby="draw-heading">
@@ -570,11 +596,15 @@ function renderSongs() {
     choice.setAttribute("aria-pressed", String(choice.dataset.artist === group));
   }
   const { language, genre } = filters;
+  const active = Boolean(group || language || genre || $("search").value.trim());
   const visible = songs.filter((song) =>
     (!group || artists(song).includes(group)) && (!genre || song.genre === genre) &&
     (!language || (song.language || "未分類") === language) && matches(song, $("search"))
   );
   $("count").textContent = visible.length ? `共 ${visible.length} 首歌` : "找不到歌曲";
+  $("library-title").textContent = active ? "搜尋結果" : "全部歌曲";
+  $("clear-filters").hidden = !active;
+  $("songs-empty").hidden = visible.length > 0;
   const groups = new Map();
   for (const song of visible) {
     const group = isEnglishTitle(song.title) ? englishGroup : titleLength(song.title);
@@ -616,6 +646,26 @@ function renderDraw() {
 }
 
 $("search").addEventListener("input", renderSongs);
+$("search").addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && !event.isComposing) $("library-results").scrollIntoView({ block: "start" });
+});
+$("clear-filters").addEventListener("click", () => {
+  filters.language = "";
+  filters.genre = "";
+  $("artist").value = "";
+  $("search").value = "";
+  renderSongs();
+});
+const siteMenu = $("site-menu");
+document.addEventListener("click", (event) => {
+  if (siteMenu.open && !siteMenu.contains(event.target)) siteMenu.open = false;
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && siteMenu.open) {
+    siteMenu.open = false;
+    siteMenu.querySelector("summary").focus();
+  }
+});
 $("artist").addEventListener("change", renderSongs);
 function renderLanguageFilters() {
   if (hiddenLanguages.includes(filters.language)) filters.language = "";
