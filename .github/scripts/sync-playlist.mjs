@@ -51,7 +51,7 @@ if (!template.includes("function titleLength(title)") || !template.includes("fun
   throw new Error("The public playlist is missing the title length and English song grouping");
 }
 const messagePattern = /(<script id="playlist-message-data" type="application\/json">)[\s\S]*?(<\/script>)/;
-if (!messagePattern.test(template) || typeof message !== "string" || message.length > 300) {
+if (template.includes('id="marquee-pause"') || !messagePattern.test(template) || typeof message !== "string" || message.length > 300) {
   throw new Error("Playlist message is missing or invalid");
 }
 const messageData = JSON.stringify(message).replaceAll("<", "\\u003c");
