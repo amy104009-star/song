@@ -56,6 +56,7 @@ const response = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/
 if (!response.ok) throw new Error(`Playlist request failed: ${response.status}`);
 const { songs, revision, announcements, message = "", messageTwo = "",
   marqueeStyle = { height: "medium", size: "medium", font: "sans" },
+  dailyPicks = null,
   hiddenLanguages = [] } = await response.json();
 if (!Number.isSafeInteger(revision) || revision < 0 || !Array.isArray(songs) ||
   songs.length > 2000 || !songs.every((song) => song &&
@@ -81,6 +82,13 @@ if (!template.includes("function titleLength(title)") || !template.includes("fun
 const messagePattern = /(<script id="playlist-message-data" type="application\/json">)[\s\S]*?(<\/script>)/;
 const messageTwoPattern = /(<script id="playlist-message-two-data" type="application\/json">)[\s\S]*?(<\/script>)/;
 const stylePattern = /(<script id="marquee-style-data" type="application\/json">)[\s\S]*?(<\/script>)/;
+const dailyPicksPattern = /(<script id="daily-picks-data" type="application\/json">)[\s\S]*?(<\/script>)/;
+if (!dailyPicksPattern.test(template) || (dailyPicks !== null &&
+  (!Number.isSafeInteger(dailyPicks.updatedAt) || dailyPicks.updatedAt <= 0 ||
+    !Array.isArray(dailyPicks.picks) || dailyPicks.picks.length !== 5 ||
+    !dailyPicks.picks.every((pick) => typeof pick?.title === "string" && typeof pick.artist === "string")))) {
+  throw new Error("Daily song recommendations are invalid");
+}
 if (template.includes('id="marquee-pause"') || !messagePattern.test(template) || !messageTwoPattern.test(template) ||
   [message, messageTwo].some((value) => typeof value !== "string" || value.length > 300)) {
   throw new Error("Playlist message is missing or invalid");
@@ -90,14 +98,15 @@ if (!visibilityPattern.test(template) || !Array.isArray(hiddenLanguages) ||
   !hiddenLanguages.every((language) => languages.has(language))) {
   throw new Error("Playlist language visibility is invalid");
 }
-const marqueeData = [
+const publicSettingsData = [
   [messagePattern, message],
   [messageTwoPattern, messageTwo],
   [stylePattern, marqueeStyle],
+  [dailyPicksPattern, dailyPicks],
 ];
-const templateWithMarquees = marqueeData.reduce((html, [pattern, value]) =>
+const templateWithSettings = publicSettingsData.reduce((html, [pattern, value]) =>
   html.replace(pattern, (_, start, end) => start + JSON.stringify(value).replaceAll("<", "\\u003c") + end), template);
-const page = templateWithMarquees
+const page = templateWithSettings
   .replace(visibilityPattern, (_, start, end) => start + JSON.stringify(hiddenLanguages) + end)
   .replace(seedPattern, (_, start, __, end) => start + seed + end)
   .replace(announcementPattern, (_, start, end) => start + notice + end);
