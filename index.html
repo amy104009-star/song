@@ -242,6 +242,7 @@ function titleLength(title) {
 const seed = JSON.parse($("seed").textContent);
 const history = new Map();
 const drawLog = [];
+const drawDuration = 5000;
 let drawFrame = 0;
 let songs = seed;
 let announcements = JSON.parse($("announcement-data").textContent);
@@ -427,12 +428,12 @@ $("draw-button").addEventListener("click", () => {
       return;
     }
     const elapsed = now - started;
-    if (elapsed >= 850) {
+    if (elapsed >= drawDuration) {
       stopDrawAnimation();
       finish();
       return;
     }
-    if (elapsed - lastChange >= 75 + elapsed / 9) {
+    if (elapsed - lastChange >= 100 + 600 * (elapsed / drawDuration) ** 2) {
       lastChange = elapsed;
       const preview = candidates[Math.floor(Math.random() * candidates.length)];
       $("draw-preview-title").textContent = preview.title;
