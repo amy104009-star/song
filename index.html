@@ -38,7 +38,13 @@
   .marquee-window { flex: 1; min-width: 0; overflow: hidden; }
   .marquee-text { width: max-content; padding-inline-start: 100%; white-space: nowrap; font-weight: 650; animation: playlist-scroll var(--scroll-time, 20s) linear infinite; }
   @keyframes playlist-scroll { to { transform: translateX(-100%); } }
-  #playlist-marquee { position: relative; isolation: isolate; overflow: hidden; }
+  #playlist-marquee {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: clamp(3.5rem, 8vw, 4.25rem);
+    padding-block: .8rem;
+  }
   #playlist-marquee::before, #playlist-marquee::after {
     position: absolute;
     inset: 0;
@@ -64,6 +70,7 @@
   #playlist-marquee.effect-float { --float-animation: marquee-float; }
   #playlist-marquee.effect-fade { --fade-animation: marquee-fade; }
   #marquee-text {
+    font-size: clamp(1.12rem, 3.5vw, 1.35rem);
     animation: playlist-scroll var(--scroll-time, 20s) linear infinite,
       var(--float-animation, none) 6s ease-in-out infinite,
       var(--fade-animation, none) 12s ease-in-out infinite;
