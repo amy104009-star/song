@@ -28,7 +28,7 @@ if (!Number.isSafeInteger(revision) || revision < 0 || !Array.isArray(songs) ||
   throw new Error("The published playlist endpoint returned unexpected data");
 }
 if (!seedPattern.test(template)) throw new Error("The page template is missing its embedded playlist");
-const seed = JSON.stringify(songs.map(({ id, title, artist }) => ({ id, title, artist }))).replaceAll("<", "\\u003c");
+const seed = JSON.stringify(songs.map(({ id, title, artist, language }) => ({ id, title, artist, language }))).replaceAll("<", "\\u003c");
 const announcementPattern = /(<script id="announcement-data" type="application\/json">)[\s\S]*?(<\/script>)/;
 if (!announcementPattern.test(template) || !announcements ||
   !Number.isSafeInteger(announcements.lastAddedAt) || !Array.isArray(announcements.ids) ||
