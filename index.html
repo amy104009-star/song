@@ -511,7 +511,7 @@ function updateOptions() {
   for (const id of ["artist", "scope"]) {
     const select = $(id);
     const value = select.value;
-    select.replaceChildren(new Option("全部歌曲", ""), ...names.map((name) => new Option(name, name)));
+    select.replaceChildren(new Option(id === "artist" ? "全部歌手" : "全部歌曲", ""), ...names.map((name) => new Option(name, name)));
     select.value = names.includes(value) ? value : "";
   }
   const artistCounts = new Map();
