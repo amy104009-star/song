@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile, appendFile } from "node:fs/promises";
 
+const genres = new Set(["抒情", "輕快", "動感舞曲", "搖滾", "饒舌", "古風"]);
 const languages = new Set(["中文", "台語", "粵語", "英文", "韓文", "日文", "越南文"]);
 const seedPattern = /(<script id="seed" type="application\/json">)([\s\S]*?)(<\/script>)/;
 const template = await readFile("public-template/index.html", "utf8");
@@ -34,12 +35,13 @@ if (!Number.isSafeInteger(revision) || revision < 0 || !Array.isArray(songs) ||
   songs.length > 2000 || !songs.every((song) => song &&
     Number.isSafeInteger(song.id) && song.id > 0 &&
     typeof song.title === "string" && typeof song.artist === "string" &&
-    (song.language === undefined || languages.has(song.language))) ||
+    (song.language === undefined || languages.has(song.language)) &&
+    (song.genre === undefined || genres.has(song.genre))) ||
   new Set(songs.map((song) => song.id)).size !== songs.length) {
   throw new Error("The published playlist endpoint returned unexpected data");
 }
 if (!seedPattern.test(template)) throw new Error("The page template is missing its embedded playlist");
-const seed = JSON.stringify(songs.map(({ id, title, artist, language }) => ({ id, title, artist, language }))).replaceAll("<", "\\u003c");
+const seed = JSON.stringify(songs.map(({ id, title, artist, language, genre }) => ({ id, title, artist, language, genre }))).replaceAll("<", "\\u003c");
 const announcementPattern = /(<script id="announcement-data" type="application\/json">)[\s\S]*?(<\/script>)/;
 if (!announcementPattern.test(template) || !announcements ||
   !Number.isSafeInteger(announcements.lastAddedAt) || !Array.isArray(announcements.ids) ||
