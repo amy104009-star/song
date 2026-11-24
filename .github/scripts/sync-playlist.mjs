@@ -2,6 +2,9 @@ import { mkdir, readFile, writeFile, appendFile } from "node:fs/promises";
 
 const seedPattern = /(<script id="seed" type="application\/json">)([\s\S]*?)(<\/script>)/;
 const template = await readFile("public-template/index.html", "utf8");
+if (!template.includes("<title>歌單</title>")) {
+  throw new Error("The public playlist has an unexpected title");
+}
 const background = await readFile("public-template/playlist-background.jpg");
 if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
   throw new Error("The public template is missing the new songs announcement board");
