@@ -57,7 +57,8 @@ const fortuneList = template.match(/const fortunes = \[([\s\S]*?)\n\];/)?.[1];
 if ((fortuneList?.match(/^\s*\["/gm)?.length ?? 0) < 40) {
   throw new Error("Expected at least 40 daily fortune readings in the public template");
 }
-if (!template.includes("https://lili-songbook.easyarena3.chatgpt.site/api/header-photo")) {
+if (!template.includes("https://lili-songbook.easyarena3.chatgpt.site/api/header-photo") ||
+  !template.includes("/api/header-photo-position")) {
   throw new Error("The public template is missing the custom title photo");
 }
 const background = await readFile("public-template/playlist-background.jpg");
