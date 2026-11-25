@@ -327,6 +327,9 @@
   .artist-select { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; font-size: .85rem; }
   .artist-select select { width: auto; max-width: 100%; min-height: 2.4rem; padding-block: .2rem; background: #fffaf3; border-color: #e4d5ca; }
   .announcements { margin-bottom: .9rem; }
+  #new-song-announcements > summary { cursor: pointer; padding-block: .12rem; font-weight: 700; }
+  #new-song-announcements > summary h2 { display: inline; margin: 0; }
+  #new-song-announcements[open] > summary { margin-bottom: .65rem; }
   .daily-picks-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .3rem .9rem; }
   .daily-picks-header time { color: #6d512e; font-size: .88rem; }
   .daily-picks-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(.18rem, 1vw, .5rem); margin-top: .55rem; }
@@ -420,11 +423,11 @@
       <div id="artist-buttons" class="artist-directory-columns" aria-label="依分類選擇歌手"></div>
     </details>
   </section>
-  <section class="announcements" aria-labelledby="announcements-title">
-    <h2 id="announcements-title">📣 新歌公告欄</h2>
+  <details id="new-song-announcements" class="announcements" open>
+    <summary><h2 id="announcements-title">📣 新歌公告欄</h2></summary>
     <ul class="announcement-list" id="new-songs"></ul>
     <p id="no-new-songs" hidden>目前沒有新歌公告</p>
-  </section>
+  </details>
   <div class="library-heading" id="library-results">
     <h2 id="library-title">全部歌曲</h2>
     <div class="library-tools">
