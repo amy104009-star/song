@@ -50,6 +50,10 @@ if (!template.includes('id="clear-filters"') || !template.includes('href="#libra
 if (!template.includes(".playlist-header::before,") || !template.includes("center 31% / cover") || !template.includes("align-content: space-between;")) {
   throw new Error("The public playlist is missing its header photo");
 }
+const fortuneList = template.match(/const fortunes = \[([\s\S]*?)\n\];/)?.[1];
+if ((fortuneList?.match(/^\s*\["/gm)?.length ?? 0) < 40) {
+  throw new Error("The public template is missing fortunes");
+}
 const background = await readFile("public-template/playlist-background.jpg");
 if (!/\.photo-background \{[^}]*opacity: \.3;/.test(template)) {
   throw new Error("The page backdrop must use 30% opacity");
