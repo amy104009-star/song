@@ -999,12 +999,12 @@ $("open-site-menu").addEventListener("click", () => {
 
 const wishlistApi = "https://lili-songbook.easyarena3.chatgpt.site/api/wishlist";
 const wishlistSnapshot = JSON.parse($("wishlist-data").textContent);
-const snapshotPhotos = new Map(wishlistSnapshot.map(({ id, photo }) => [id, photo]));
+const snapshotPhotos = new Map(wishlistSnapshot.map(({ id, photoVersion = 0, photo }) => [`${id}:${photoVersion}`, photo]));
 function renderPublicWishlist(gifts) {
-  const cards = gifts.slice(0, 3).map(({ id, name, coins, zoom = 100, x = 0, y = 0 }) => {
+  const cards = gifts.slice(0, 3).map(({ id, name, coins, zoom = 100, x = 0, y = 0, photoVersion = 0 }) => {
     const gift = element("li", undefined, "wishlist-gift");
     const image = element("img");
-    image.src = snapshotPhotos.get(id) ?? `${wishlistApi}/${id}/photo`;
+    image.src = snapshotPhotos.get(`${id}:${photoVersion}`) ?? `${wishlistApi}/${id}/photo?v=${photoVersion}`;
     image.alt = "";
     image.loading = "lazy";
     const frame = element("div", undefined, "wishlist-photo-frame");
