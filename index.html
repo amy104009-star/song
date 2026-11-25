@@ -284,14 +284,13 @@
   .card strong, .card p { display: block; overflow-wrap: anywhere; }
   .card p { font-size: .89rem; }
   .card .song-title-row { column-gap: .45rem; justify-content: space-between; }
-  .copy-song-title { color: #67411c; background: #fff7df; border-color: #dcc08d; }
-  .copy-song-title:hover { background: #ffe8aa; }
+  .copy-song-title { color: #67411c; background: transparent; border: 0; }
+  .copy-song-title:hover { background: transparent; color: #9a581e; }
   .copy-song-title { display: inline-grid; place-items: center; min-width: 2.15rem; }
   .copy-icon { position: relative; display: block; width: 1rem; height: 1rem; }
   .copy-icon::before, .copy-icon::after { content: ""; position: absolute; width: .58rem; height: .65rem; border: 1.4px solid currentColor; border-radius: .14rem; }
   .copy-icon::before { inset: 0 auto auto 0; }
   .copy-icon::after { inset: auto 0 0 auto; background: #fff7df; }
-  .copy-song-title:hover .copy-icon::after { background: #ffe8aa; }
   .copy-song-title[data-feedback] .copy-icon::before { content: none; }
   .copy-song-title[data-feedback] .copy-icon::after { inset: 0; width: auto; height: auto; border: 0; background: transparent; font-size: 1rem; line-height: 1; }
   .copy-song-title[data-feedback="success"] .copy-icon::after { content: "✓"; }
