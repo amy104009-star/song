@@ -83,7 +83,8 @@ const messagePattern = /(<script id="playlist-message-data" type="application\/j
 const messageTwoPattern = /(<script id="playlist-message-two-data" type="application\/json">)[\s\S]*?(<\/script>)/;
 const stylePattern = /(<script id="marquee-style-data" type="application\/json">)[\s\S]*?(<\/script>)/;
 const dailyPicksPattern = /(<script id="daily-picks-data" type="application\/json">)[\s\S]*?(<\/script>)/;
-if (!template.includes('id="daily-picks-list"') || !dailyPicksPattern.test(template) || (dailyPicks !== null &&
+if (!template.includes('id="daily-picks"') || !template.includes('id="daily-picks-list"') ||
+  !dailyPicksPattern.test(template) || (dailyPicks !== null &&
   (!Number.isSafeInteger(dailyPicks.updatedAt) || dailyPicks.updatedAt <= 0 ||
     !Array.isArray(dailyPicks.picks) || dailyPicks.picks.length !== 5 ||
     !dailyPicks.picks.every((pick) => typeof pick?.title === "string" && typeof pick.artist === "string")))) {
