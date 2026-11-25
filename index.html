@@ -362,6 +362,12 @@
   #songs .song-tags { display: flex; flex-wrap: wrap; gap: .28rem; }
   #songs .song-language { margin-top: 0; padding-inline: .42rem; }
   .card .copy-song-title { min-height: 2.75rem; }
+  #new-songs { grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr)); gap: .4rem; }
+  #new-songs .card { padding: .35rem .45rem; border-radius: .65rem; }
+  #new-songs .card strong { font-size: .9rem; }
+  #new-songs .card p { font-size: .8rem; }
+  #new-songs .copy-song-title { min-height: 2.25rem; }
+  #new-songs .song-language { margin-top: .15rem; }
   @media (max-width: 24rem) {
     .search-results-link { padding-inline: .6rem; }
     .card .song-title-row { gap: .35rem; }
