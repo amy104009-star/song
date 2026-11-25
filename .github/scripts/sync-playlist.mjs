@@ -11,6 +11,9 @@ if (!template.includes('<dialog id="site-menu"') || !template.includes('id="open
   !template.includes('href="https://lili-songbook.easyarena3.chatgpt.site/requests"')) {
   throw new Error("The public playlist is missing the saved-request lookup link");
 }
+if (!/<dialog id="site-menu"[\s\S]*?id="daily-fortune"[\s\S]*?id="draw-fortune"[\s\S]*?<\/dialog>/.test(template)) {
+  throw new Error("The public template is missing the daily fortune draw");
+}
 if (!template.includes('href="https://lili-songbook.easyarena3.chatgpt.site/mailbox"')) {
   throw new Error("The public playlist is missing the song mailbox link");
 }
