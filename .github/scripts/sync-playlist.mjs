@@ -97,7 +97,7 @@ if (template.includes('id="marquee-pause"') || !messagePattern.test(template) ||
 }
 const visibilityPattern = /(<script id="language-visibility-data" type="application\/json">)[\s\S]*?(<\/script>)/;
 if (!visibilityPattern.test(template) || !Array.isArray(hiddenLanguages) ||
-  !hiddenLanguages.every((language) => languages.has(language))) {
+  !hiddenLanguages.every((language) => language === "未分類" || languages.has(language))) {
   throw new Error("Playlist language visibility is invalid");
 }
 const publicSettingsData = [
