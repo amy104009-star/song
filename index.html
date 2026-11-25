@@ -286,6 +286,16 @@
   .card .song-title-row { column-gap: .45rem; justify-content: space-between; }
   .copy-song-title { color: #67411c; background: #fff7df; border-color: #dcc08d; }
   .copy-song-title:hover { background: #ffe8aa; }
+  .copy-song-title { display: inline-grid; place-items: center; min-width: 2.15rem; }
+  .copy-icon { position: relative; display: block; width: 1rem; height: 1rem; }
+  .copy-icon::before, .copy-icon::after { content: ""; position: absolute; width: .58rem; height: .65rem; border: 1.4px solid currentColor; border-radius: .14rem; }
+  .copy-icon::before { inset: 0 auto auto 0; }
+  .copy-icon::after { inset: auto 0 0 auto; background: #fff7df; }
+  .copy-song-title:hover .copy-icon::after { background: #ffe8aa; }
+  .copy-song-title[data-feedback] .copy-icon::before { content: none; }
+  .copy-song-title[data-feedback] .copy-icon::after { inset: 0; width: auto; height: auto; border: 0; background: transparent; font-size: 1rem; line-height: 1; }
+  .copy-song-title[data-feedback="success"] .copy-icon::after { content: "✓"; }
+  .copy-song-title[data-feedback="error"] .copy-icon::after { content: "!"; }
   .song-language { background: #f8edda; border-color: #e5caa2; }
   dialog { border-radius: 1.4rem; box-shadow: 0 20px 65px #3d230947; }
   .dialog-heading { background: linear-gradient(120deg,#fff1c5,#ffdb85); }
@@ -646,18 +656,30 @@ function button(label, onClick) {
 }
 
 function copySongTitle(song) {
-  const copy = button("複製", async () => {
+  const label = `複製歌名：${song.title}`;
+  let reset;
+  const copy = button("", async () => {
+    let feedback;
     try {
       await navigator.clipboard.writeText(song.title);
-      copy.textContent = "已複製";
-      setTimeout(() => { copy.textContent = "複製"; }, 1600);
+      feedback = "success";
     } catch {
-      copy.textContent = "複製失敗";
-      setTimeout(() => { copy.textContent = "複製"; }, 2000);
+      feedback = "error";
     }
+    copy.dataset.feedback = feedback;
+    copy.setAttribute("aria-label", feedback === "success" ? `已複製：${song.title}` : `複製失敗：${song.title}`);
+    clearTimeout(reset);
+    reset = setTimeout(() => {
+      delete copy.dataset.feedback;
+      copy.setAttribute("aria-label", label);
+    }, 1800);
   });
   copy.className = "copy-song-title";
-  copy.setAttribute("aria-label", `複製歌名：${song.title}`);
+  copy.title = "複製歌名";
+  copy.setAttribute("aria-label", label);
+  const icon = element("span", undefined, "copy-icon");
+  icon.setAttribute("aria-hidden", "true");
+  copy.append(icon);
   return copy;
 }
 
