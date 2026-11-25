@@ -358,6 +358,11 @@
   .site-sidebar-body { min-height: 100%; padding: 1rem; }
   .site-sidebar-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding-bottom: .9rem; border-bottom: 1px solid #ead6ab; }
   .site-sidebar-header h2 { margin: 0; font-size: 1.2rem; }
+  #daily-fortune { background: #fffaf0; border: 1px solid #ecd7b0; border-radius: .7rem; }
+  #daily-fortune summary { padding: .75rem .85rem; font-weight: 650; cursor: pointer; }
+  .fortune-body { padding: 0 .85rem .85rem; }
+  .fortune-body p { margin: .5rem 0 0; line-height: 1.5; }
+  #draw-fortune { width: 100%; background: #fff0c9; }
   .site-sidebar nav { display: grid; gap: .5rem; margin-top: .9rem; }
   .site-sidebar a, .site-sidebar nav button { display: block; padding: .75rem .85rem; border: 1px solid #ecd7b0; border-radius: .7rem; background: #fffdf7; color: inherit; font-weight: 650; text-align: start; text-decoration: none; }
   .site-sidebar a:hover, .site-sidebar nav button:hover { background: #ffeec8; }
@@ -405,6 +410,13 @@
       <button type="button" id="favorite-filter" aria-pressed="false">♡ 我的收藏</button>
       <a href="https://lili-songbook.easyarena3.chatgpt.site/requests">存單查詢</a>
       <a href="https://lili-songbook.easyarena3.chatgpt.site/mailbox">學歌留言信箱</a>
+      <details id="daily-fortune">
+        <summary>🎋 今日運勢</summary>
+        <div class="fortune-body">
+          <button type="button" id="draw-fortune">抽一張幸運籤</button>
+          <div id="fortune-result" role="status" aria-atomic="true" tabindex="-1"></div>
+        </div>
+      </details>
     </nav>
   </div>
 </dialog>
@@ -833,6 +845,50 @@ $("favorite-filter").addEventListener("click", () => {
   $("site-menu").close();
   $("library-results").scrollIntoView({ block: "start" });
 });
+const fortuneButton = $("draw-fortune");
+const fortuneResult = $("fortune-result");
+const fortuneCalendar = new Intl.DateTimeFormat("zh-TW", { timeZone: "Asia/Taipei", dateStyle: "short" });
+const fortuneKey = "kitamura-daily-fortune";
+const fortunes = [
+  ["大吉 · 好事靠近", "把最期待的事先做一步，今天適合主動開口。", "香檳金", 8],
+  ["吉 · 慢慢發光", "照自己的節奏來，做好手邊一件事就值得開心。", "奶油黃", 3],
+  ["小吉 · 意外的靈感", "聽一首平常不會選的歌，給自己一點新鮮感。", "霧紫", 7],
+  ["中吉 · 恰好的默契", "想起誰就問候一聲，一句關心就很剛好。", "蜜桃粉", 2],
+  ["吉 · 順風而行", "把拖了幾天的小事收尾，給自己留點自在的時間。", "薄荷綠", 6],
+  ["小吉 · 留一點空白", "行程少排一件事，把時間留給自己喜歡的事。", "珍珠白", 4],
+  ["中吉 · 好心情到站", "用一首喜歡的歌開場，替今天挑一段旋律。", "晴空藍", 5],
+  ["大吉 · 新的起點", "想了很久的事，今天可以先試一小步。", "琥珀橙", 9],
+];
+let fortuneRecord;
+try { fortuneRecord = JSON.parse(localStorage.getItem(fortuneKey)); } catch {}
+
+function currentFortune(date) {
+  return fortuneRecord?.date === date && Number.isInteger(fortuneRecord.index)
+    ? fortunes[fortuneRecord.index] : undefined;
+}
+
+function renderFortune() {
+  const fortune = currentFortune(fortuneCalendar.format(new Date()));
+  fortuneResult.replaceChildren();
+  fortuneButton.hidden = Boolean(fortune);
+  if (!fortune) return;
+  const [title, message, color, number] = fortune;
+  fortuneResult.append(element("strong", title), element("p", message),
+    element("p", `幸運色 ${color} ・ 幸運數字 ${number}`));
+}
+
+fortuneButton.addEventListener("click", () => {
+  const date = fortuneCalendar.format(new Date());
+  if (!currentFortune(date)) {
+    fortuneRecord = { date, index: Math.floor(Math.random() * fortunes.length) };
+    try { localStorage.setItem(fortuneKey, JSON.stringify(fortuneRecord)); } catch {}
+  }
+  renderFortune();
+  fortuneResult.focus();
+});
+$("daily-fortune").addEventListener("toggle", renderFortune);
+$("open-site-menu").addEventListener("click", renderFortune);
+
 const siteMenu = $("site-menu");
 $("open-site-menu").addEventListener("click", () => siteMenu.showModal());
 $("close-site-menu").addEventListener("click", () => siteMenu.close());
