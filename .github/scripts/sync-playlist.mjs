@@ -38,7 +38,8 @@ if (!template.includes('class="song-filters radio-filters"') || !template.includ
   throw new Error("The public playlist is missing its header or library layout");
 }
 if (!template.includes('id="clear-filters"') || !template.includes('href="#library-results"') ||
-  !/<dialog id="site-menu"[\s\S]*?id="favorite-filter"[\s\S]*?<\/dialog>/.test(template)) {
+  !/<dialog id="site-menu"[\s\S]*?id="favorite-filter"[\s\S]*?<\/dialog>/.test(template) ||
+  !template.includes('control.className = "favorite-song"')) {
   throw new Error("The public playlist is missing its search result controls");
 }
 if (!template.includes(".playlist-header::before,") || !template.includes("center 31% / cover") || !template.includes("align-content: space-between;")) {
