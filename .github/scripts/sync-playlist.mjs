@@ -52,7 +52,7 @@ if (!template.includes(".playlist-header::before,") || !template.includes("cente
 }
 const fortuneList = template.match(/const fortunes = \[([\s\S]*?)\n\];/)?.[1];
 if ((fortuneList?.match(/^\s*\["/gm)?.length ?? 0) < 40) {
-  throw new Error("The public template is missing fortunes");
+  throw new Error("Expected at least 40 daily fortune readings in the public template");
 }
 const background = await readFile("public-template/playlist-background.jpg");
 if (!/\.photo-background \{[^}]*opacity: \.3;/.test(template)) {
