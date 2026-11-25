@@ -350,8 +350,8 @@
   .site-sidebar-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding-bottom: .9rem; border-bottom: 1px solid #ead6ab; }
   .site-sidebar-header h2 { margin: 0; font-size: 1.2rem; }
   .site-sidebar nav { display: grid; gap: .5rem; margin-top: .9rem; }
-  .site-sidebar a { display: block; padding: .75rem .85rem; border: 1px solid #ecd7b0; border-radius: .7rem; background: #fffdf7; color: inherit; font-weight: 650; text-decoration: none; }
-  .site-sidebar a:hover { background: #ffeec8; }
+  .site-sidebar a, .site-sidebar nav button { display: block; padding: .75rem .85rem; border: 1px solid #ecd7b0; border-radius: .7rem; background: #fffdf7; color: inherit; font-weight: 650; text-align: start; text-decoration: none; }
+  .site-sidebar a:hover, .site-sidebar nav button:hover { background: #ffeec8; }
   @media (prefers-reduced-motion: reduce) { .site-sidebar[open] { animation: none; } }
   .search-tools { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .6rem; }
   .search-results-link { display: grid; place-items: center; min-height: 3.05rem; padding-inline: .9rem; border: 1px solid #dbbf85; border-radius: .85rem; background: #fff8e2; color: #5d3b1d; font-size: .9rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
@@ -391,6 +391,7 @@
       <button id="close-site-menu" type="button" autofocus>關閉</button>
     </div>
     <nav aria-label="側邊選單">
+      <button type="button" id="favorite-filter" aria-pressed="false">♡ 我的收藏</button>
       <a href="https://lili-songbook.easyarena3.chatgpt.site/requests">存單查詢</a>
       <a href="https://lili-songbook.easyarena3.chatgpt.site/mailbox">學歌留言信箱</a>
     </nav>
@@ -452,7 +453,6 @@
     <h2 id="library-title">全部歌曲</h2>
     <div class="library-tools">
       <p class="count" id="count" aria-live="polite"></p>
-      <button type="button" id="favorite-filter" aria-pressed="false">♡ 我的收藏</button>
       <button type="button" id="clear-filters" hidden>清除篩選</button>
     </div>
   </div>
@@ -799,8 +799,10 @@ $("clear-filters").addEventListener("click", () => {
   renderSongs();
 });
 $("favorite-filter").addEventListener("click", () => {
-  filters.favorites = !filters.favorites;
+  filters.favorites = true;
   renderSongs();
+  $("site-menu").close();
+  $("library-results").scrollIntoView({ block: "start" });
 });
 const siteMenu = $("site-menu");
 $("open-site-menu").addEventListener("click", () => siteMenu.showModal());
