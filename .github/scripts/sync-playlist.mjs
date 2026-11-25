@@ -134,8 +134,8 @@ if (!Array.isArray(gifts) || gifts.length > 3 || !gifts.every((gift) =>
   Number.isSafeInteger(gift.coins) && gift.coins > 0)) {
   throw new Error("Invalid public wishlist");
 }
-const wishlistPhotos = await Promise.all(gifts.map(async ({ id }) => {
-  const response = await fetch(`${wishlistApi}/${id}/photo`, { signal: AbortSignal.timeout(15000) });
+const wishlistPhotos = await Promise.all(gifts.map(async ({ id, photoVersion = 0 }) => {
+  const response = await fetch(`${wishlistApi}/${id}/photo?v=${photoVersion}`, { signal: AbortSignal.timeout(15000) });
   const mime = response.headers.get("content-type");
   if (!response.ok || !["image/png", "image/jpeg"].includes(mime)) {
     throw new Error(`Wishlist gift ${id} photo is unavailable`);
@@ -145,8 +145,8 @@ const wishlistPhotos = await Promise.all(gifts.map(async ({ id }) => {
   const name = `wishlist-${id}-${createHash("sha256").update(bytes).digest("hex").slice(0, 16)}.${mime === "image/png" ? "png" : "jpg"}`;
   return { name, bytes };
 }));
-const wishlist = gifts.map(({ id, name, coins, zoom, x, y }, index) =>
-  ({ id, name, coins, zoom, x, y, photo: "./" + wishlistPhotos[index].name }));
+const wishlist = gifts.map(({ id, name, coins, zoom, x, y, photoVersion = 0 }, index) =>
+  ({ id, name, coins, zoom, x, y, photoVersion, photo: "./" + wishlistPhotos[index].name }));
 const publicSettingsData = [
   [wishlistPattern, wishlist],
   [messagePattern, message],
