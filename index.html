@@ -227,6 +227,7 @@
     inset: 0;
     background: url("./playlist-background.jpg") center 31% / cover no-repeat;
     background-image: url("https://lili-songbook.easyarena3.chatgpt.site/api/header-photo"), url("./playlist-background.jpg");
+    background-position: var(--playlist-photo-position, center 31%);
   }
   .playlist-header::after {
     z-index: -1;
@@ -234,7 +235,7 @@
     background: linear-gradient(180deg, #21191150, transparent 38%, transparent 64%, #21191155);
   }
   @media (max-width: 37rem) {
-    .playlist-header::before { background-position: center 26%; }
+    .playlist-header::before { background-position: var(--playlist-photo-position, center 26%); }
   }
   .playlist-title { display: grid; justify-items: center; gap: .65rem; }
   .playlist-header h1 {
@@ -402,6 +403,16 @@
     .card .song-title-row { gap: .35rem; }
   }
 </style>
+<script>
+  fetch("https://lili-songbook.easyarena3.chatgpt.site/api/header-photo-position", { cache: "no-store" })
+    .then((response) => response.ok ? response.json() : {})
+    .then(({ position }) => {
+      if (position && [position.x, position.y].every((value) => Number.isInteger(value) && value >= 0 && value <= 100)) {
+        document.documentElement.style.setProperty("--playlist-photo-position", `${position.x}% ${position.y}%`);
+      }
+    })
+    .catch(() => {});
+</script>
 </head>
 <body>
 <button id="open-site-menu" type="button" aria-haspopup="dialog" aria-controls="site-menu">☰ 選單</button>
