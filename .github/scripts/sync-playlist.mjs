@@ -53,7 +53,7 @@ if (!template.includes(".playlist-header::before,") || !template.includes("cente
 if (!template.includes('id="daily-fortune" hidden') || !template.includes("fortunePanel.hidden = visible === false")) {
   throw new Error("The daily fortune visibility setting is missing");
 }
-if (!template.includes('id="playlist-wishlist"') || !template.includes("/api/wishlist")) {
+if (!template.includes('id="playlist-wishlist"') || !template.includes("/api/wishlist") || !template.includes("wishlist-photo-frame")) {
   throw new Error("The public wishlist is missing");
 }
 const fortuneList = template.match(/const fortunes = \[([\s\S]*?)\n\];/)?.[1];
