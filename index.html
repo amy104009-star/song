@@ -362,6 +362,11 @@
   #daily-fortune summary { padding: .75rem .85rem; font-weight: 650; cursor: pointer; }
   .fortune-body { padding: 0 .85rem .85rem; }
   .fortune-body p { margin: .5rem 0 0; line-height: 1.5; }
+  .fortune-shaker { margin: .5rem auto .75rem; text-align: center; }
+  .fortune-shaker[hidden] { display: none; }
+  .fortune-shaker span { display: inline-block; font-size: 2.7rem; transform-origin: 50% 85%; animation: shake-fortune .48s ease-in-out infinite; }
+  @keyframes shake-fortune { 0%, 100% { transform: rotate(-15deg); } 50% { transform: rotate(15deg); } }
+  @media (prefers-reduced-motion: reduce) { .fortune-shaker span { animation: none; } }
   #draw-fortune { width: 100%; background: #fff0c9; }
   .site-sidebar nav { display: grid; gap: .5rem; margin-top: .9rem; }
   .site-sidebar a, .site-sidebar nav button { display: block; padding: .75rem .85rem; border: 1px solid #ecd7b0; border-radius: .7rem; background: #fffdf7; color: inherit; font-weight: 650; text-align: start; text-decoration: none; }
@@ -414,6 +419,10 @@
         <summary>🎋 今日運勢</summary>
         <div class="fortune-body">
           <button type="button" id="draw-fortune">抽一張幸運籤</button>
+          <div class="fortune-shaker" id="fortune-shaker" role="status" hidden>
+            <span aria-hidden="true">🎋</span>
+            <p>搖籤中…</p>
+          </div>
           <div id="fortune-result" role="status" aria-atomic="true" tabindex="-1"></div>
         </div>
       </details>
@@ -847,6 +856,8 @@ $("favorite-filter").addEventListener("click", () => {
 });
 const fortuneButton = $("draw-fortune");
 const fortuneResult = $("fortune-result");
+const fortuneShaker = $("fortune-shaker");
+const fortuneShakeDuration = 5000;
 const fortuneCalendar = new Intl.DateTimeFormat("zh-TW", { timeZone: "Asia/Taipei", dateStyle: "short" });
 const fortuneKey = "kitamura-daily-fortune";
 const fortunes = [
@@ -870,7 +881,7 @@ function currentFortune(date) {
 function renderFortune() {
   const fortune = currentFortune(fortuneCalendar.format(new Date()));
   fortuneResult.replaceChildren();
-  fortuneButton.hidden = Boolean(fortune);
+  fortuneButton.hidden = Boolean(fortune) || fortuneButton.disabled;
   if (!fortune) return;
   const [title, message, color, number] = fortune;
   fortuneResult.append(element("strong", title), element("p", message),
@@ -878,13 +889,23 @@ function renderFortune() {
 }
 
 fortuneButton.addEventListener("click", () => {
-  const date = fortuneCalendar.format(new Date());
-  if (!currentFortune(date)) {
-    fortuneRecord = { date, index: Math.floor(Math.random() * fortunes.length) };
-    try { localStorage.setItem(fortuneKey, JSON.stringify(fortuneRecord)); } catch {}
-  }
+  if (fortuneButton.disabled) return;
+  fortuneButton.disabled = true;
+  fortuneShaker.hidden = false;
   renderFortune();
-  fortuneResult.focus();
+  setTimeout(() => {
+    const date = fortuneCalendar.format(new Date());
+    if (!currentFortune(date)) {
+      fortuneRecord = { date, index: Math.floor(Math.random() * fortunes.length) };
+      try { localStorage.setItem(fortuneKey, JSON.stringify(fortuneRecord)); } catch {}
+    }
+    fortuneButton.disabled = false;
+    fortuneShaker.hidden = true;
+    renderFortune();
+    if ($("site-menu").open && $("daily-fortune").open && document.activeElement === document.body) {
+      fortuneResult.focus();
+    }
+  }, fortuneShakeDuration);
 });
 $("daily-fortune").addEventListener("toggle", renderFortune);
 $("open-site-menu").addEventListener("click", renderFortune);
