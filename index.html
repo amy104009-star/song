@@ -870,11 +870,12 @@ const fortunes = [
   ["中吉 · 好心情到站", "用一首喜歡的歌開場，替今天挑一段旋律。", "晴空藍", 5],
   ["大吉 · 新的起點", "想了很久的事，今天可以先試一小步。", "琥珀橙", 9],
 ];
+let fortuneVersion;
 let fortuneRecord;
 try { fortuneRecord = JSON.parse(localStorage.getItem(fortuneKey)); } catch {}
 
 function currentFortune(date) {
-  return fortuneRecord?.date === date && Number.isInteger(fortuneRecord.index)
+  return fortuneRecord?.date === date && (fortuneVersion === undefined || (fortuneRecord.version ?? 0) === fortuneVersion) && Number.isInteger(fortuneRecord.index)
     ? fortunes[fortuneRecord.index] : undefined;
 }
 
@@ -893,10 +894,12 @@ fortuneButton.addEventListener("click", () => {
   fortuneButton.disabled = true;
   fortuneShaker.hidden = false;
   renderFortune();
-  setTimeout(() => {
+  const refresh = refreshFortuneVersion();
+  setTimeout(async () => {
+    await refresh;
     const date = fortuneCalendar.format(new Date());
     if (!currentFortune(date)) {
-      fortuneRecord = { date, index: Math.floor(Math.random() * fortunes.length) };
+      fortuneRecord = { date, version: fortuneVersion ?? 0, index: Math.floor(Math.random() * fortunes.length) };
       try { localStorage.setItem(fortuneKey, JSON.stringify(fortuneRecord)); } catch {}
     }
     fortuneButton.disabled = false;
@@ -907,8 +910,28 @@ fortuneButton.addEventListener("click", () => {
     }
   }, fortuneShakeDuration);
 });
-$("daily-fortune").addEventListener("toggle", renderFortune);
-$("open-site-menu").addEventListener("click", renderFortune);
+async function refreshFortuneVersion() {
+  try {
+    const response = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/fortune-reset", {
+      cache: "no-store", signal: AbortSignal.timeout(2500),
+    });
+    if (!response.ok) return;
+    const { version } = await response.json();
+    if (Number.isSafeInteger(version) && version >= 0) fortuneVersion = Math.max(fortuneVersion ?? 0, version);
+  } catch {}
+}
+
+async function syncFortune() {
+  renderFortune();
+  await refreshFortuneVersion();
+  renderFortune();
+}
+$("daily-fortune").addEventListener("toggle", (event) => {
+  if (event.currentTarget.open) void syncFortune();
+});
+$("open-site-menu").addEventListener("click", () => {
+  if ($("daily-fortune").open) void syncFortune();
+});
 
 const siteMenu = $("site-menu");
 $("open-site-menu").addEventListener("click", () => siteMenu.showModal());
