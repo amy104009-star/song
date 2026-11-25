@@ -31,7 +31,8 @@ if (!template.includes('<details id="draw-history"')) {
 if (!template.includes('id="draw-preview"') || !template.includes("const drawDuration = 3500;")) {
   throw new Error("The public playlist is missing the draw animation");
 }
-if (!template.includes("clipboard.writeText(song.title)") || !template.includes("copySongTitle(result.song)")) {
+if (!template.includes("clipboard.writeText(song.title)") || !template.includes("copySongTitle(result.song)") ||
+  !template.includes('"copy-icon"')) {
   throw new Error("The public playlist is missing the song title copy button");
 }
 if (!template.includes('class="song-filters radio-filters"') || !template.includes('id="language-buttons"') || !template.includes(".filter-chips {\n    display: flex;\n    flex-wrap: wrap;") || !template.includes('id="library-title"')) {
