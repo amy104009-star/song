@@ -329,8 +329,10 @@
   .announcements { margin-bottom: .9rem; }
   .daily-picks-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .3rem .9rem; }
   .daily-picks-header time { color: #6d512e; font-size: .88rem; }
-  .daily-picks-list { display: grid; grid-template-columns: repeat(5, minmax(8rem, 1fr)); gap: .55rem; margin-top: .65rem; padding-bottom: .25rem; overflow-x: auto; }
-  .daily-picks-list .card { background: #fffaf0; }
+  .daily-picks-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(.18rem, 1vw, .5rem); margin-top: .55rem; }
+  .daily-picks-list .card { min-width: 0; padding: clamp(.2rem, 1vw, .6rem); border-radius: .55rem; background: #fffaf0; overflow-wrap: anywhere; }
+  .daily-picks-list .card strong { font-size: clamp(.66rem, 2.8vw, .95rem); line-height: 1.3; }
+  .daily-picks-list .card p { font-size: clamp(.62rem, 2.55vw, .82rem); line-height: 1.3; }
   @media (max-width: 37rem) {
     .playlist-header { border-radius: 1.2rem; }
     .radio-filters { gap: .8rem; }
