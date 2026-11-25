@@ -874,9 +874,7 @@ function renderDailyPicks(board) {
   $("daily-picks-date").textContent = format.format(date);
   $("daily-picks-list").replaceChildren(...board.picks.map((song) => {
     const item = element("li", undefined, "card");
-    const title = element("div", undefined, "song-title-row");
-    title.append(element("strong", song.title), copySongTitle(song));
-    item.append(title, element("p", song.artist));
+    item.append(element("strong", song.title), element("p", song.artist));
     return item;
   }));
 }
