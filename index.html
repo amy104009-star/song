@@ -402,6 +402,13 @@
     .search-results-link { padding-inline: .6rem; }
     .card .song-title-row { gap: .35rem; }
   }
+  #playlist-wishlist { padding: clamp(.75rem, 2.5vw, 1.2rem); }
+  #playlist-wishlist h2 { margin: 0 0 .6rem; font-size: 1.15rem; }
+  .wishlist-gifts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.35rem, 1.5vw, .8rem); margin: 0; padding: 0; list-style: none; }
+  .wishlist-gift { display: grid; align-content: start; gap: .25rem; padding: clamp(.35rem, 1.25vw, .8rem); border: 1px solid #ead6ab; border-radius: .85rem; background: #fffaf0; text-align: center; overflow-wrap: anywhere; }
+  .wishlist-gift img { display: block; width: 100%; height: clamp(3.4rem, 14vw, 7rem); object-fit: contain; }
+  .wishlist-gift strong { font-size: clamp(.8rem, 2.8vw, 1rem); }
+  .wishlist-gift span { color: #79521f; font-size: clamp(.72rem, 2.5vw, .9rem); }
 </style>
 <script>
   fetch("https://lili-songbook.easyarena3.chatgpt.site/api/header-photo-position", { cache: "no-store" })
@@ -464,6 +471,10 @@
       <time id="daily-picks-date"></time>
     </div>
     <ul id="daily-picks-list" class="daily-picks-list"></ul>
+  </section>
+  <section class="announcements" id="playlist-wishlist" aria-labelledby="wishlist-title" hidden>
+    <h2 id="wishlist-title">🎁 心願單</h2>
+    <ul id="wishlist-gifts" class="wishlist-gifts"></ul>
   </section>
   <section class="song-filters radio-filters" aria-label="歌單篩選">
     <div class="search-tools">
@@ -979,6 +990,28 @@ fortunePanel.addEventListener("toggle", (event) => {
 $("open-site-menu").addEventListener("click", () => {
   void syncFortune();
 });
+
+const wishlistApi = "https://lili-songbook.easyarena3.chatgpt.site/api/wishlist";
+async function loadPublicWishlist() {
+  try {
+    const response = await fetch(wishlistApi, { cache: "no-store", signal: AbortSignal.timeout(5000) });
+    if (!response.ok) return;
+    const { gifts } = await response.json();
+    if (!Array.isArray(gifts)) return;
+    const cards = gifts.slice(0, 3).map(({ id, name, coins }) => {
+      const gift = element("li", undefined, "wishlist-gift");
+      const image = element("img");
+      image.src = `${wishlistApi}/${id}/photo`;
+      image.alt = "";
+      image.loading = "lazy";
+      gift.append(image, element("strong", name), element("span", `🪙 ${coins.toLocaleString("zh-TW")} 金幣`));
+      return gift;
+    });
+    $("wishlist-gifts").replaceChildren(...cards);
+    $("playlist-wishlist").hidden = !cards.length;
+  } catch {}
+}
+void loadPublicWishlist();
 
 const siteMenu = $("site-menu");
 $("open-site-menu").addEventListener("click", () => siteMenu.showModal());
