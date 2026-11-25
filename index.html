@@ -548,6 +548,7 @@
 <script id="playlist-message-data" type="application/json">""</script>
 <script id="playlist-message-two-data" type="application/json">""</script>
 <script id="marquee-style-data" type="application/json">{"height":"medium","size":"medium","font":"sans"}</script>
+<script id="wishlist-data" type="application/json">[]</script>
 <script id="daily-picks-data" type="application/json">null</script>
 <script id="language-visibility-data" type="application/json">[]</script>
 <script type="module">
@@ -997,32 +998,38 @@ $("open-site-menu").addEventListener("click", () => {
 });
 
 const wishlistApi = "https://lili-songbook.easyarena3.chatgpt.site/api/wishlist";
+const wishlistSnapshot = JSON.parse($("wishlist-data").textContent);
+const snapshotPhotos = new Map(wishlistSnapshot.map(({ id, photo }) => [id, photo]));
+function renderPublicWishlist(gifts) {
+  const cards = gifts.slice(0, 3).map(({ id, name, coins, zoom = 100, x = 0, y = 0 }) => {
+    const gift = element("li", undefined, "wishlist-gift");
+    const image = element("img");
+    image.src = snapshotPhotos.get(id) ?? `${wishlistApi}/${id}/photo`;
+    image.alt = "";
+    image.loading = "lazy";
+    const frame = element("div", undefined, "wishlist-photo-frame");
+    if ([zoom, x, y].every(Number.isInteger)) {
+      const scale = zoom / 100;
+      const extra = (scale - 1) / 2;
+      frame.style.setProperty("--gift-extra-top", Math.max(0, extra - y / 100));
+      frame.style.setProperty("--gift-extra-bottom", Math.max(0, extra + y / 100));
+      image.style.transform = `translate(${x}%, ${y}%) scale(${scale})`;
+    }
+    frame.append(image);
+    gift.append(frame, element("strong", name), element("span", `🪙 ${coins.toLocaleString("zh-TW")} 金幣`));
+    return gift;
+  });
+  $("wishlist-gifts").replaceChildren(...cards);
+  $("playlist-wishlist").hidden = !cards.length;
+}
+renderPublicWishlist(wishlistSnapshot);
+
 async function loadPublicWishlist() {
   try {
     const response = await fetch(wishlistApi, { cache: "no-store", signal: AbortSignal.timeout(5000) });
     if (!response.ok) return;
     const { gifts } = await response.json();
-    if (!Array.isArray(gifts)) return;
-    const cards = gifts.slice(0, 3).map(({ id, name, coins, zoom = 100, x = 0, y = 0 }) => {
-      const gift = element("li", undefined, "wishlist-gift");
-      const image = element("img");
-      image.src = `${wishlistApi}/${id}/photo`;
-      image.alt = "";
-      image.loading = "lazy";
-      const frame = element("div", undefined, "wishlist-photo-frame");
-      if ([zoom, x, y].every(Number.isInteger)) {
-        const scale = zoom / 100;
-        const extra = (scale - 1) / 2;
-        frame.style.setProperty("--gift-extra-top", Math.max(0, extra - y / 100));
-        frame.style.setProperty("--gift-extra-bottom", Math.max(0, extra + y / 100));
-        image.style.transform = `translate(${x}%, ${y}%) scale(${scale})`;
-      }
-      frame.append(image);
-      gift.append(frame, element("strong", name), element("span", `🪙 ${coins.toLocaleString("zh-TW")} 金幣`));
-      return gift;
-    });
-    $("wishlist-gifts").replaceChildren(...cards);
-    $("playlist-wishlist").hidden = !cards.length;
+    if (Array.isArray(gifts)) renderPublicWishlist(gifts);
   } catch {}
 }
 void loadPublicWishlist();
