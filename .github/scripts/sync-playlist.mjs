@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile, appendFile } from "node:fs/promises";
 
 const genres = new Set(["抒情", "輕快", "動感舞曲", "搖滾", "饒舌", "古風"]);
@@ -122,7 +123,32 @@ if (!visibilityPattern.test(template) || !Array.isArray(hiddenLanguages) ||
   !hiddenLanguages.every((language) => language === "未分類" || languages.has(language))) {
   throw new Error("Playlist language visibility is invalid");
 }
+const wishlistPattern = /(<script id="wishlist-data" type="application\/json">)[\s\S]*?(<\/script>)/;
+if (!wishlistPattern.test(template)) throw new Error("The wishlist snapshot slot is missing");
+const wishlistApi = "https://lili-songbook.easyarena3.chatgpt.site/api/wishlist";
+const wishlistResponse = await fetch(wishlistApi, { signal: AbortSignal.timeout(15000) });
+if (!wishlistResponse.ok) throw new Error(`Wishlist request failed: ${wishlistResponse.status}`);
+const { gifts } = await wishlistResponse.json();
+if (!Array.isArray(gifts) || gifts.length > 3 || !gifts.every((gift) =>
+  Number.isSafeInteger(gift?.id) && gift.id > 0 && typeof gift.name === "string" &&
+  Number.isSafeInteger(gift.coins) && gift.coins > 0)) {
+  throw new Error("Invalid public wishlist");
+}
+const wishlistPhotos = await Promise.all(gifts.map(async ({ id }) => {
+  const response = await fetch(`${wishlistApi}/${id}/photo`, { signal: AbortSignal.timeout(15000) });
+  const mime = response.headers.get("content-type");
+  if (!response.ok || !["image/png", "image/jpeg"].includes(mime)) {
+    throw new Error(`Wishlist gift ${id} photo is unavailable`);
+  }
+  const bytes = Buffer.from(await response.arrayBuffer());
+  if (!bytes.length || bytes.length > 240000) throw new Error("Invalid wishlist photo size");
+  const name = `wishlist-${id}-${createHash("sha256").update(bytes).digest("hex").slice(0, 16)}.${mime === "image/png" ? "png" : "jpg"}`;
+  return { name, bytes };
+}));
+const wishlist = gifts.map(({ id, name, coins, zoom, x, y }, index) =>
+  ({ id, name, coins, zoom, x, y, photo: "./" + wishlistPhotos[index].name }));
 const publicSettingsData = [
+  [wishlistPattern, wishlist],
   [messagePattern, message],
   [messageTwoPattern, messageTwo],
   [stylePattern, marqueeStyle],
@@ -162,6 +188,7 @@ if (process.env.GITHUB_OUTPUT) {
 if (!unchanged) {
   await mkdir("site-dist", { recursive: true });
   await writeFile("site-dist/index.html", page);
+  await Promise.all(wishlistPhotos.map(({ name, bytes }) => writeFile("site-dist/" + name, bytes)));
   await writeFile("site-dist/playlist-background.jpg", background);
   await writeFile("site-dist/playlist-page-background.jpg", pageBackground);
 }
