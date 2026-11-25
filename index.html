@@ -341,13 +341,18 @@
     .radio-filters { gap: .8rem; }
     .artist-select select { flex: 1; min-width: 7rem; }
   }
-  .site-sidebar { position: fixed; inset: .75rem auto auto .75rem; z-index: 20; color: #422e18; }
-  .site-sidebar summary { cursor: pointer; width: fit-content; padding: .45rem .7rem; border: 1px solid #d7b66c; border-radius: .7rem; background: #fff8df; font-weight: 650; }
-  .site-sidebar nav { margin-top: .4rem; border: 1px solid #d7b66c; border-radius: .8rem; background: #fff8df; box-shadow: 0 .4rem 1.5rem #452b2226; }
-  .site-sidebar a { display: block; padding: .75rem 1.2rem; color: inherit; }
-  .site-sidebar a + a { border-top: 1px solid #ead6ab; }
+  #open-site-menu { position: fixed; inset: .75rem auto auto .75rem; z-index: 20; border-color: #d7b66c; background: #fff8df; box-shadow: 0 .25rem .8rem #452b221a; }
+  .site-sidebar { position: fixed; inset: 0 auto 0 0; width: min(19rem, 86vw); height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; border-radius: 0 1.15rem 1.15rem 0; background: #fff8e9; color: #422e18; }
+  .site-sidebar[open] { animation: site-menu-enter .24s ease-out both; }
+  @keyframes site-menu-enter { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+  .site-sidebar::backdrop { background: #32261575; }
+  .site-sidebar-body { min-height: 100%; padding: 1rem; }
+  .site-sidebar-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding-bottom: .9rem; border-bottom: 1px solid #ead6ab; }
+  .site-sidebar-header h2 { margin: 0; font-size: 1.2rem; }
+  .site-sidebar nav { display: grid; gap: .5rem; margin-top: .9rem; }
+  .site-sidebar a { display: block; padding: .75rem .85rem; border: 1px solid #ecd7b0; border-radius: .7rem; background: #fffdf7; color: inherit; font-weight: 650; text-decoration: none; }
   .site-sidebar a:hover { background: #ffeec8; }
-  .site-sidebar nav { overflow: hidden; }
+  @media (prefers-reduced-motion: reduce) { .site-sidebar[open] { animation: none; } }
   .search-tools { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .6rem; }
   .search-results-link { display: grid; place-items: center; min-height: 3.05rem; padding-inline: .9rem; border: 1px solid #dbbf85; border-radius: .85rem; background: #fff8e2; color: #5d3b1d; font-size: .9rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
   .search-results-link:hover, #clear-filters:hover { background: #ffedbd; }
@@ -375,13 +380,19 @@
 </style>
 </head>
 <body>
-<details id="site-menu" class="site-sidebar">
-  <summary>☰ 選單</summary>
-  <nav aria-label="側邊選單">
-    <a href="https://lili-songbook.easyarena3.chatgpt.site/requests">存單查詢</a>
-    <a href="https://lili-songbook.easyarena3.chatgpt.site/mailbox">學歌留言信箱</a>
-  </nav>
-</details>
+<button id="open-site-menu" type="button" aria-haspopup="dialog" aria-controls="site-menu">☰ 選單</button>
+<dialog id="site-menu" class="site-sidebar" aria-labelledby="site-menu-title">
+  <div class="site-sidebar-body">
+    <div class="site-sidebar-header">
+      <h2 id="site-menu-title">北村歌單</h2>
+      <button id="close-site-menu" type="button" autofocus>關閉</button>
+    </div>
+    <nav aria-label="側邊選單">
+      <a href="https://lili-songbook.easyarena3.chatgpt.site/requests">存單查詢</a>
+      <a href="https://lili-songbook.easyarena3.chatgpt.site/mailbox">學歌留言信箱</a>
+    </nav>
+  </div>
+</dialog>
 <div class="photo-background" aria-hidden="true"></div>
 <div id="floating-background" class="bubbles-container" aria-hidden="true"></div>
 <main>
@@ -752,14 +763,10 @@ $("clear-filters").addEventListener("click", () => {
   renderSongs();
 });
 const siteMenu = $("site-menu");
-document.addEventListener("click", (event) => {
-  if (siteMenu.open && !siteMenu.contains(event.target)) siteMenu.open = false;
-});
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && siteMenu.open) {
-    siteMenu.open = false;
-    siteMenu.querySelector("summary").focus();
-  }
+$("open-site-menu").addEventListener("click", () => siteMenu.showModal());
+$("close-site-menu").addEventListener("click", () => siteMenu.close());
+siteMenu.addEventListener("click", (event) => {
+  if (event.target === siteMenu) siteMenu.close();
 });
 $("artist").addEventListener("change", renderSongs);
 function renderLanguageFilters() {
