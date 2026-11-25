@@ -47,7 +47,8 @@ if (!/\.photo-background \{[^}]*opacity: \.3;/.test(template)) {
   throw new Error("The page backdrop must use 30% opacity");
 }
 const pageBackground = await readFile("public-template/playlist-page-background.jpg");
-if (!template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
+if (!template.includes('<details id="new-song-announcements"') ||
+  !template.includes('id="announcements-title"') || !template.includes('id="new-songs"')) {
   throw new Error("The public template is missing the new songs announcement board");
 }
 const response = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/songs", {
