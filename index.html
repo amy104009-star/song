@@ -415,7 +415,7 @@
       <button type="button" id="favorite-filter" aria-pressed="false">♡ 我的收藏</button>
       <a href="https://lili-songbook.easyarena3.chatgpt.site/requests">存單查詢</a>
       <a href="https://lili-songbook.easyarena3.chatgpt.site/mailbox">學歌留言信箱</a>
-      <details id="daily-fortune">
+      <details id="daily-fortune" hidden>
         <summary>🎋 今日運勢</summary>
         <div class="fortune-body">
           <button type="button" id="draw-fortune">抽一張幸運籤</button>
@@ -854,6 +854,7 @@ $("favorite-filter").addEventListener("click", () => {
   $("site-menu").close();
   $("library-results").scrollIntoView({ block: "start" });
 });
+const fortunePanel = $("daily-fortune");
 const fortuneButton = $("draw-fortune");
 const fortuneResult = $("fortune-result");
 const fortuneShaker = $("fortune-shaker");
@@ -948,7 +949,9 @@ async function refreshFortuneVersion() {
       cache: "no-store", signal: AbortSignal.timeout(2500),
     });
     if (!response.ok) return;
-    const { version } = await response.json();
+    const { version, visible } = await response.json();
+    fortunePanel.hidden = visible === false;
+    if (fortunePanel.hidden) fortunePanel.open = false;
     if (Number.isSafeInteger(version) && version >= 0) fortuneVersion = Math.max(fortuneVersion ?? 0, version);
   } catch {}
 }
@@ -958,11 +961,11 @@ async function syncFortune() {
   await refreshFortuneVersion();
   renderFortune();
 }
-$("daily-fortune").addEventListener("toggle", (event) => {
+fortunePanel.addEventListener("toggle", (event) => {
   if (event.currentTarget.open) void syncFortune();
 });
 $("open-site-menu").addEventListener("click", () => {
-  if ($("daily-fortune").open) void syncFortune();
+  void syncFortune();
 });
 
 const siteMenu = $("site-menu");
