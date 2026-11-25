@@ -7,7 +7,8 @@ const template = (await readFile("public-template/index.html", "utf8")).replaceA
 if (!template.includes("<title>北村歌單</title>")) {
   throw new Error("The public playlist has an unexpected title");
 }
-if (!template.includes('href="https://lili-songbook.easyarena3.chatgpt.site/requests"')) {
+if (!template.includes('<dialog id="site-menu"') ||
+  !template.includes('href="https://lili-songbook.easyarena3.chatgpt.site/requests"')) {
   throw new Error("The public playlist is missing the saved-request lookup link");
 }
 if (!template.includes('href="https://lili-songbook.easyarena3.chatgpt.site/mailbox"')) {
