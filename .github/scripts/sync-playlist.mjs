@@ -54,6 +54,9 @@ const fortuneList = template.match(/const fortunes = \[([\s\S]*?)\n\];/)?.[1];
 if ((fortuneList?.match(/^\s*\["/gm)?.length ?? 0) < 40) {
   throw new Error("Expected at least 40 daily fortune readings in the public template");
 }
+if (!template.includes("@keyframes playlist-entrance")) {
+  throw new Error("The playlist entrance animation is missing");
+}
 const background = await readFile("public-template/playlist-background.jpg");
 if (!/\.photo-background \{[^}]*opacity: \.3;/.test(template)) {
   throw new Error("The page backdrop must use 30% opacity");
