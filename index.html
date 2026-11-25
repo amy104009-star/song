@@ -400,7 +400,20 @@
     .search-results-link { padding-inline: .6rem; }
     .card .song-title-row { gap: .35rem; }
   }
+  @media (prefers-reduced-motion: no-preference) {
+    html.playlist-enter .playlist-title { animation: playlist-entrance .75s ease-out both; }
+    html.playlist-enter #open-draw { animation: playlist-entrance .65s .12s ease-out both; }
+    @keyframes playlist-entrance {
+      from { opacity: .35; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  }
 </style>
+<script>
+  if (!location.hash && performance.getEntriesByType("navigation")[0]?.type !== "back_forward") {
+    document.documentElement.classList.add("playlist-enter");
+  }
+</script>
 </head>
 <body>
 <button id="open-site-menu" type="button" aria-haspopup="dialog" aria-controls="site-menu">☰ 選單</button>
