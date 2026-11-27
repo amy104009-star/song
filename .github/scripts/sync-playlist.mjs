@@ -79,6 +79,7 @@ if (!/\.photo-background \{[^}]*opacity: \.3;/.test(template)) {
 }
 const pageBackground = await readFile("public-template/playlist-page-background.jpg");
 if (!template.includes('<details id="new-song-announcements"') ||
+  !template.includes("songsById.get(id)).filter(Boolean).slice(0, 4)") ||
   !template.includes('id="announcements-title"') || !template.includes('<ul class="announcement-list" id="new-songs"')) {
   throw new Error("The public template is missing the new songs announcement board");
 }
