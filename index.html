@@ -405,13 +405,11 @@
   #playlist-wishlist { padding: clamp(.75rem, 2.5vw, 1.2rem); }
   #playlist-wishlist h2 { margin: 0 0 .6rem; font-size: 1.15rem; }
   .wishlist-gifts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.35rem, 1.5vw, .8rem); margin: 0; padding: 0; list-style: none; }
-  .wishlist-gift { display: grid; align-content: start; gap: .25rem; padding: clamp(.35rem, 1.25vw, .8rem); border: 1px solid #ead6ab; border-radius: .85rem; background: #fffaf0; text-align: center; overflow-wrap: anywhere; }
-  .wishlist-photo-frame {
-    --gift-photo-height: clamp(3.4rem, 14vw, 7rem);
-    overflow: hidden;
-    padding-block: calc(var(--gift-photo-height) * var(--gift-extra-top, 0)) calc(var(--gift-photo-height) * var(--gift-extra-bottom, 0));
-  }
-  .wishlist-gift img { display: block; width: 100%; height: var(--gift-photo-height); object-fit: contain; }
+  .wishlist-gift { display: grid; grid-template-rows: auto 1fr auto; align-items: start; gap: .25rem; padding: clamp(.35rem, 1.25vw, .8rem); border: 1px solid #ead6ab; border-radius: .85rem; background: #fffaf0; text-align: center; overflow-wrap: anywhere; }
+  .wishlist-photo-frame { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; }
+  .wishlist-gift img { position: absolute; display: block; width: var(--gift-image-size, 80%); height: var(--gift-image-size, 80%); left: var(--gift-image-left, 50%); top: var(--gift-image-top, 50%); transform: translate(-50%, -50%); object-fit: contain; }
+  .wishlist-price { display: flex; flex-wrap: nowrap; justify-content: center; align-items: center; gap: .25em; }
+  .wishlist-price .wishlist-coin { flex: none; margin: 0; }
   .wishlist-gift strong { font-size: clamp(.8rem, 2.8vw, 1rem); }
   .wishlist-gift span { color: #79521f; font-size: clamp(.72rem, 2.5vw, .9rem); }
   .wishlist-coin { display: inline-block; vertical-align: -.27em; width: 1.46em; height: 1.46em; margin-inline-end: .26em; border-radius: 50%; background: radial-gradient(ellipse at 36% 30%, #ffd43c 0%, #ffac10 42%, #f9910a 60%, #fbb21c 63%, #ffd244 66%, #fff09c 72%); box-shadow: inset 0 0 0 .065em #ffe685, inset 0 0 0 .145em #ffdc53; position: relative; }
@@ -1012,17 +1010,17 @@ function renderPublicWishlist(gifts) {
     image.loading = "lazy";
     const frame = element("div", undefined, "wishlist-photo-frame");
     if ([zoom, x, y].every(Number.isInteger)) {
-      const scale = zoom / 100;
-      const extra = (scale - 1) / 2;
-      frame.style.setProperty("--gift-extra-top", Math.max(0, extra - y / 100));
-      frame.style.setProperty("--gift-extra-bottom", Math.max(0, extra + y / 100));
-      image.style.transform = `translate(${x}%, ${y}%) scale(${scale})`;
+      const size = Math.min(100, zoom * .8);
+      const offset = (value) => Math.max(size / 2, Math.min(100 - size / 2, 50 + value));
+      frame.style.setProperty("--gift-image-size", size + "%");
+      frame.style.setProperty("--gift-image-left", offset(x) + "%");
+      frame.style.setProperty("--gift-image-top", offset(y) + "%");
     }
     frame.append(image);
-    const price = element("span");
+    const price = element("span", undefined, "wishlist-price");
     const coin = element("i", undefined, "wishlist-coin");
     coin.setAttribute("aria-hidden", "true");
-    price.append(coin, `${coins.toLocaleString("zh-TW")} 金幣`);
+    price.append(coin, element("span", `${coins.toLocaleString("zh-TW")} 金幣`));
     gift.append(frame, element("strong", name), price);
     return gift;
   });
