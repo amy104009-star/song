@@ -414,9 +414,9 @@
   .wishlist-gift img { display: block; width: 100%; height: var(--gift-photo-height); object-fit: contain; }
   .wishlist-gift strong { font-size: clamp(.8rem, 2.8vw, 1rem); }
   .wishlist-gift span { color: #79521f; font-size: clamp(.72rem, 2.5vw, .9rem); }
-  .wishlist-coin { display: inline-grid; vertical-align: -.16em; width: 1.16em; height: 1.16em; border-radius: 50%; border: 1px solid #bd7d19; margin-inline-end: .25em; background: linear-gradient(145deg,#fff2a4,#efb635); box-shadow: inset 0 0 0 1px #ffe586; position: relative; }
-  .wishlist-coin::before { content: ""; position: absolute; width: .43em; height: .32em; left: 50%; top: 58%; transform: translate(-50%,-50%); border-radius: 60% 60% 45% 45%; background: #885113; }
-  .wishlist-coin::after { content: ""; position: absolute; width: .13em; height: .17em; left: 50%; top: 25%; transform: translateX(-50%); border-radius: 50%; background: #885113; box-shadow: -.2em .11em #885113, .2em .11em #885113; }
+  .wishlist-coin { display: inline-block; position: relative; vertical-align: -.24em; width: 1.34em; height: 1.34em; border-radius: 50%; border: .07em solid #fff09b; margin-inline-end: .28em; background: radial-gradient(circle at 46% 40%, #ffbd23 0%, #f99408 62%, #eb820b 65%, #ffd43b 67%, #ffe874 100%); box-shadow: inset 0 0 0 .09em #ffe56b; }
+  .wishlist-coin::before { content: ""; position: absolute; width: .43em; height: .34em; left: 50%; top: 64%; transform: translate(-50%,-50%); border-radius: 58% 58% 45% 45%; background: #ffeb72; }
+  .wishlist-coin::after { content: ""; position: absolute; width: .155em; height: .18em; left: 50%; top: 28%; transform: translateX(-50%); border-radius: 50%; color: #ffeb72; box-shadow: -.26em .18em currentColor, -.1em .025em currentColor, .1em .025em currentColor, .26em .18em currentColor; }
 </style>
 <script>
   fetch("https://lili-songbook.easyarena3.chatgpt.site/api/header-photo-position", { cache: "no-store" })
