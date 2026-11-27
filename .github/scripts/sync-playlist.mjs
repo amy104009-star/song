@@ -57,7 +57,7 @@ if (!template.includes('id="daily-fortune" hidden') || !template.includes("fortu
 if (!template.includes('id="playlist-wishlist"') || !template.includes("/api/wishlist") || !template.includes("wishlist-photo-frame") || !template.includes("--gift-extra-bottom")) {
   throw new Error("The public wishlist is missing");
 }
-if (!template.includes(".wishlist-coin::after") || !template.includes("-.26em .18em currentColor")) {
+if (!template.includes(".wishlist-coin::after") || !template.includes("at 42% 34%")) {
   throw new Error("Missing the four-toe wishlist paw-print coin");
 }
 const fortuneList = template.match(/const fortunes = \[([\s\S]*?)\n\];/)?.[1];
