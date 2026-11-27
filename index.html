@@ -404,7 +404,9 @@
   }
   #playlist-wishlist { padding: clamp(.75rem, 2.5vw, 1.2rem); }
   #playlist-wishlist h2 { margin: 0 0 .6rem; font-size: 1.15rem; }
-  .wishlist-gifts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.35rem, 1.5vw, .8rem); margin: 0; padding: 0; list-style: none; }
+  .wishlist-gifts { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, calc((100% - 2 * var(--wishlist-gap)) / 3)); --wishlist-gap: clamp(.35rem, 1.5vw, .8rem); gap: var(--wishlist-gap); margin: 0; padding: 0 0 .35rem; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-color: #d6ae61 #fff6dc; }
+  .wishlist-gifts > li { scroll-snap-align: start; }
+  @media (max-width: 36rem) { .wishlist-gifts:has(li:nth-child(3)) { grid-auto-columns: 44%; } }
   .wishlist-gift { display: grid; grid-template-rows: auto 1fr auto; align-items: start; gap: .25rem; padding: clamp(.35rem, 1.25vw, .8rem); border: 1px solid #ead6ab; border-radius: .85rem; background: #fffaf0; text-align: center; overflow-wrap: anywhere; }
   .wishlist-photo-frame { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; }
   .wishlist-gift img { position: absolute; display: block; width: var(--gift-image-size, 80%); height: var(--gift-image-size, 80%); left: var(--gift-image-left, 50%); top: var(--gift-image-top, 50%); transform: translate(-50%, -50%); object-fit: contain; }
@@ -480,7 +482,7 @@
   </section>
   <section class="announcements" id="playlist-wishlist" aria-labelledby="wishlist-title" hidden>
     <h2 id="wishlist-title">🎁 心願單</h2>
-    <ul id="wishlist-gifts" class="wishlist-gifts"></ul>
+    <ul id="wishlist-gifts" class="wishlist-gifts" tabindex="0" aria-label="心願單禮物，可左右捲動"></ul>
   </section>
   <section class="song-filters radio-filters" aria-label="歌單篩選">
     <div class="search-tools">
@@ -1002,7 +1004,7 @@ const wishlistApi = "https://lili-songbook.easyarena3.chatgpt.site/api/wishlist"
 const wishlistSnapshot = JSON.parse($("wishlist-data").textContent);
 const snapshotPhotos = new Map(wishlistSnapshot.map(({ id, photoVersion = 0, photo }) => [`${id}:${photoVersion}`, photo]));
 function renderPublicWishlist(gifts) {
-  const cards = gifts.slice(0, 3).map(({ id, name, coins, zoom = 100, x = 0, y = 0, photoVersion = 0 }) => {
+  const cards = gifts.slice(0, 6).map(({ id, name, coins, zoom = 100, x = 0, y = 0, photoVersion = 0 }) => {
     const gift = element("li", undefined, "wishlist-gift");
     const image = element("img");
     image.src = snapshotPhotos.get(`${id}:${photoVersion}`) ?? `${wishlistApi}/${id}/photo?v=${photoVersion}`;
