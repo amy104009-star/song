@@ -1283,63 +1283,72 @@ async function loadLatestSongs() {
 }
 
 void loadLatestSongs();
-function maskVisitNetwork(ip) {
-  if (typeof ip !== "string") return "";
-  const parts = ip.split(".");
-  if (parts.length === 4 && parts.every((part) => /^\d{1,3}$/.test(part) && Number(part) <= 255)) return parts.slice(0, 3).join(".") + ".*";
-  if (!/^[a-f\d:]+$/i.test(ip) || !ip.includes(":")) return "";
-  try { new URL("http://[" + ip + "]/"); } catch { return ""; }
-  const [left, right] = ip.toLowerCase().split("::");
-  const prefix = left ? left.split(":") : [];
-  if (right !== undefined && prefix.length < 3) {
-    const suffix = right ? right.split(":") : [];
-    prefix.push(...Array(8 - prefix.length - suffix.length).fill("0"), ...suffix);
-  }
-  return prefix.slice(0, 3).map((part) => parseInt(part, 16).toString(16)).join(":") + "::/48";
-}
-
-const playlistVisitKey = "kitamura-playlist-visit-city-v3";
-const playlistVisitCooldown = 5 * 60 * 1000;
-let visitPending = false;
-let lastVisitAt = 0;
-async function recordPlaylistVisit() {
-  if (visitPending || document.hidden) return;
-  try { lastVisitAt = Math.max(lastVisitAt, Number(sessionStorage.getItem(playlistVisitKey)) || 0); } catch {}
-  if (Date.now() - lastVisitAt < playlistVisitCooldown) return;
-  visitPending = true;
-  let city = "";
-  let mainland = false;
-  let network = "";
-  try {
-    const location = await fetch("https://ipapi.co/json/", {
-      credentials: "omit", referrerPolicy: "no-referrer", signal: AbortSignal.timeout(3500),
-    });
-    if (location.ok) {
-      const data = await location.json();
-      const name = typeof data.city === "string" ? data.city.trim() : "";
-      mainland = data.country_code === "CN";
-      if (mainland) network = maskVisitNetwork(data.ip);
-      const placeholder = ["undefined", "unknown", "null", "none"].includes(name.toLowerCase());
-      if (!placeholder && name.length <= 100 && /^\p{L}[\p{L}\p{M} .’'()\p{Pd}]*$/u.test(name)) city = name;
+</script>
+<script>
+(function () {
+  var key = "kitamura-playlist-visit-city-v4";
+  var pending = false;
+  var last = 0;
+  function mask(ip) {
+    if (typeof ip !== "string") return "";
+    var parts = ip.split(".");
+    if (parts.length === 4 && parts.every(function (part) { return /^\d{1,3}$/.test(part) && Number(part) <= 255; })) {
+      return parts.slice(0, 3).join(".") + ".*";
     }
-  } catch {}
-  try {
-    const response = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/playlist-visits", {
-      method: "POST", credentials: "omit", keepalive: true, body: mainland ? [city, "CN", network].join("\n") : city || undefined,
-    });
-    if (response.ok) {
-      lastVisitAt = Date.now();
-      try { sessionStorage.setItem(playlistVisitKey, String(lastVisitAt)); } catch {}
+    if (!/^[a-f\d:]+$/i.test(ip) || ip.indexOf(":") < 0) return "";
+    try { new URL("http://[" + ip + "]/"); } catch (error) { return ""; }
+    var blocks = ip.toLowerCase().split("::");
+    var prefix = blocks[0] ? blocks[0].split(":") : [];
+    var suffix = blocks[1] ? blocks[1].split(":") : [];
+    if (blocks.length > 1 && prefix.length < 3) {
+      while (prefix.length + suffix.length < 8) prefix.push("0");
+      prefix = prefix.concat(suffix);
     }
-  } catch {
-  } finally {
-    visitPending = false;
+    return prefix.slice(0, 3).map(function (part) { return parseInt(part, 16).toString(16); }).join(":") + "::/48";
   }
-}
-void recordPlaylistVisit();
-window.addEventListener("pageshow", () => void recordPlaylistVisit());
-document.addEventListener("visibilitychange", () => void recordPlaylistVisit());
-
+  function submit(body) {
+    try {
+      var request = new XMLHttpRequest();
+      request.open("POST", "https://lili-songbook.easyarena3.chatgpt.site/api/playlist-visits", true);
+      request.timeout = 8000;
+      request.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
+      request.onloadend = function () {
+        pending = false;
+        if (request.status < 200 || request.status >= 300) return;
+        last = Date.now();
+        try { sessionStorage.setItem(key, String(last)); } catch (error) {}
+      };
+      request.send(body);
+    } catch (error) { pending = false; }
+  }
+  function record() {
+    if (pending || document.hidden) return;
+    try { last = Math.max(last, Number(sessionStorage.getItem(key)) || 0); } catch (error) {}
+    if (Date.now() - last < 300000) return;
+    pending = true;
+    try {
+      var request = new XMLHttpRequest();
+      request.open("GET", "https://ipapi.co/json/", true);
+      request.timeout = 5000;
+      request.onloadend = function () {
+        var body = "";
+        if (request.status === 200) {
+          try {
+            var data = JSON.parse(request.responseText);
+            var city = typeof data.city === "string" ? data.city.trim().slice(0, 100) : "";
+            if (/^(undefined|unknown|null|none)$/i.test(city)) city = "";
+            body = data.country_code === "CN" ? [city, "CN", mask(data.ip)].join("\n") : city;
+          } catch (error) {}
+        }
+        submit(body);
+      };
+      request.send();
+    } catch (error) { submit(""); }
+  }
+  record();
+  window.addEventListener("pageshow", record);
+  document.addEventListener("visibilitychange", record);
+})();
 </script>
 </body>
 </html>
