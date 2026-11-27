@@ -642,6 +642,7 @@ const artistCategories = [
 ].map(([label, names]) => [label, new Set(names.split("|"))]);
 
 function updateOptions() {
+  renderGenreFilters();
   const names = [...new Set(songs.flatMap(artists))].sort((a, b) => a.localeCompare(b, "zh-Hant"));
   for (const id of ["artist", "scope"]) {
     const select = $(id);
@@ -1073,7 +1074,11 @@ function renderLanguageFilters() {
 }
 
 renderLanguageFilters();
-mountChips("genre-buttons", genreOptions, "genre", "全部曲風");
+function renderGenreFilters() {
+  const choices = [...new Set([...genreOptions, ...songs.map(({ genre }) => genre).filter(Boolean)])];
+  if (!choices.includes(filters.genre)) filters.genre = "";
+  mountChips("genre-buttons", choices, "genre", "全部曲風");
+}
 $("open-draw").addEventListener("click", () => $("draw").showModal());
 document.querySelectorAll("[data-close]").forEach((node) => {
   node.addEventListener("click", () => $(node.dataset.close).close());
