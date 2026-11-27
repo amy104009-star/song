@@ -1283,6 +1283,18 @@ async function loadLatestSongs() {
 }
 
 void loadLatestSongs();
+async function recordPlaylistVisit() {
+  const key = "kitamura-playlist-visit";
+  try { if (sessionStorage.getItem(key)) return; } catch {}
+  try {
+    const response = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/playlist-visits", {
+      method: "POST", credentials: "omit", keepalive: true,
+    });
+    if (response.ok) sessionStorage.setItem(key, "1");
+  } catch {}
+}
+void recordPlaylistVisit();
+
 </script>
 </body>
 </html>
