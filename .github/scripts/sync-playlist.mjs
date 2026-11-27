@@ -1,7 +1,6 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile, appendFile } from "node:fs/promises";
 
-const genres = new Set(["抒情", "輕快", "動感舞曲", "搖滾", "饒舌", "古風"]);
 const languages = new Set(["中文", "台語", "粵語", "英文", "韓文", "日文", "越南文"]);
 const seedPattern = /(<script id="seed" type="application\/json">)([\s\S]*?)(<\/script>)/;
 const template = (await readFile("public-template/index.html", "utf8")).replaceAll("\r\n", "\n");
@@ -96,7 +95,8 @@ if (!Number.isSafeInteger(revision) || revision < 0 || !Array.isArray(songs) ||
     Number.isSafeInteger(song.id) && song.id > 0 &&
     typeof song.title === "string" && typeof song.artist === "string" &&
     (song.language === undefined || languages.has(song.language)) &&
-    (song.genre === undefined || genres.has(song.genre))) ||
+    (song.genre === undefined || (typeof song.genre === "string" && song.genre.length > 0 && song.genre.length <= 40 &&
+      song.genre === song.genre.trim() && !/\p{Cc}/u.test(song.genre)))) ||
   new Set(songs.map((song) => song.id)).size !== songs.length) {
   throw new Error("The published playlist endpoint returned unexpected data");
 }
