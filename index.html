@@ -406,7 +406,9 @@
   #playlist-wishlist h2 { margin: 0 0 .6rem; font-size: 1.15rem; }
   .wishlist-gifts { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, calc((100% - 2 * var(--wishlist-gap)) / 3)); --wishlist-gap: clamp(.35rem, 1.5vw, .8rem); gap: var(--wishlist-gap); margin: 0; padding: 0 0 .35rem; list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-color: #d6ae61 #fff6dc; }
   .wishlist-gifts > li { scroll-snap-align: start; }
-  @media (max-width: 36rem) { .wishlist-gifts:has(li:nth-child(3)) { grid-auto-columns: 44%; } }
+  .wishlist-gifts { cursor: grab; }
+  .wishlist-gifts.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+  .wishlist-gift img { pointer-events: none; }
   .wishlist-gift { display: grid; grid-template-rows: auto 1fr auto; align-items: start; gap: .25rem; padding: clamp(.35rem, 1.25vw, .8rem); border: 1px solid #ead6ab; border-radius: .85rem; background: #fffaf0; text-align: center; overflow-wrap: anywhere; }
   .wishlist-photo-frame { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; }
   .wishlist-gift img { position: absolute; display: block; width: var(--gift-image-size, 80%); height: var(--gift-image-size, 80%); left: var(--gift-image-left, 50%); top: var(--gift-image-top, 50%); transform: translate(-50%, -50%); object-fit: contain; }
@@ -1000,6 +1002,23 @@ $("open-site-menu").addEventListener("click", () => {
   void syncFortune();
 });
 
+const wishlistTrack = $("wishlist-gifts");
+let wishlistDrag;
+wishlistTrack.addEventListener("pointerdown", (event) => {
+  if (event.pointerType !== "mouse" || event.button !== 0 || wishlistTrack.scrollWidth <= wishlistTrack.clientWidth) return;
+  wishlistDrag = { id: event.pointerId, x: event.clientX, left: wishlistTrack.scrollLeft };
+  wishlistTrack.setPointerCapture(event.pointerId);
+  wishlistTrack.classList.add("is-dragging");
+  event.preventDefault();
+});
+wishlistTrack.addEventListener("pointermove", (event) => {
+  if (event.pointerId !== wishlistDrag?.id) return;
+  wishlistTrack.scrollLeft = wishlistDrag.left + wishlistDrag.x - event.clientX;
+});
+wishlistTrack.addEventListener("lostpointercapture", () => {
+  wishlistDrag = undefined;
+  wishlistTrack.classList.remove("is-dragging");
+});
 const wishlistApi = "https://lili-songbook.easyarena3.chatgpt.site/api/wishlist";
 const wishlistSnapshot = JSON.parse($("wishlist-data").textContent);
 const snapshotPhotos = new Map(wishlistSnapshot.map(({ id, photoVersion = 0, photo }) => [`${id}:${photoVersion}`, photo]));
