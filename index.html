@@ -414,6 +414,9 @@
   .wishlist-gift img { display: block; width: 100%; height: var(--gift-photo-height); object-fit: contain; }
   .wishlist-gift strong { font-size: clamp(.8rem, 2.8vw, 1rem); }
   .wishlist-gift span { color: #79521f; font-size: clamp(.72rem, 2.5vw, .9rem); }
+  .wishlist-coin { display: inline-grid; vertical-align: -.16em; width: 1.16em; height: 1.16em; border-radius: 50%; border: 1px solid #bd7d19; margin-inline-end: .25em; background: linear-gradient(145deg,#fff2a4,#efb635); box-shadow: inset 0 0 0 1px #ffe586; position: relative; }
+  .wishlist-coin::before { content: ""; position: absolute; width: .43em; height: .32em; left: 50%; top: 58%; transform: translate(-50%,-50%); border-radius: 60% 60% 45% 45%; background: #885113; }
+  .wishlist-coin::after { content: ""; position: absolute; width: .13em; height: .17em; left: 50%; top: 25%; transform: translateX(-50%); border-radius: 50%; background: #885113; box-shadow: -.2em .11em #885113, .2em .11em #885113; }
 </style>
 <script>
   fetch("https://lili-songbook.easyarena3.chatgpt.site/api/header-photo-position", { cache: "no-store" })
@@ -1016,7 +1019,11 @@ function renderPublicWishlist(gifts) {
       image.style.transform = `translate(${x}%, ${y}%) scale(${scale})`;
     }
     frame.append(image);
-    gift.append(frame, element("strong", name), element("span", `🪙 ${coins.toLocaleString("zh-TW")} 金幣`));
+    const price = element("span");
+    const coin = element("i", undefined, "wishlist-coin");
+    coin.setAttribute("aria-hidden", "true");
+    price.append(coin, `${coins.toLocaleString("zh-TW")} 金幣`);
+    gift.append(frame, element("strong", name), price);
     return gift;
   });
   $("wishlist-gifts").replaceChildren(...cards);
