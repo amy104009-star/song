@@ -392,7 +392,7 @@
   #songs .song-tags { display: flex; flex-wrap: wrap; gap: .28rem; }
   #songs .song-language { margin-top: 0; padding-inline: .42rem; }
   .card .copy-song-title { min-height: 2.75rem; }
-  #new-songs { grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr)); gap: .4rem; }
+  #new-songs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; }
   #new-songs .card { padding: .35rem .45rem; border-radius: .65rem; }
   #new-songs .card strong { font-size: .9rem; }
   #new-songs .card p { font-size: .8rem; }
@@ -553,6 +553,7 @@
 <script id="playlist-message-data" type="application/json">""</script>
 <script id="playlist-message-two-data" type="application/json">""</script>
 <script id="marquee-style-data" type="application/json">{"height":"medium","size":"medium","font":"sans"}</script>
+<script id="page-background-data" type="application/json">{"visible":1,"x":50,"y":43,"opacity":30,"custom":0,"photoVersion":0}</script>
 <script id="wishlist-data" type="application/json">[]</script>
 <script id="daily-picks-data" type="application/json">null</script>
 <script id="language-visibility-data" type="application/json">[]</script>
@@ -1003,6 +1004,28 @@ $("open-site-menu").addEventListener("click", () => {
   void syncFortune();
 });
 
+const backgroundApi = "https://lili-songbook.easyarena3.chatgpt.site/api/page-background";
+const backgroundSnapshot = JSON.parse($("page-background-data").textContent);
+function applyPageBackground(settings) {
+  const { visible, x, y, opacity, custom, photoVersion } = settings;
+  if (![0, 1].includes(visible) || ![x, y, opacity].every((value) => Number.isInteger(value) && value >= 0 && value <= 100)) return;
+  const layer = document.querySelector(".photo-background");
+  if (!visible) {
+    layer.style.opacity = "0";
+    return;
+  }
+  if (custom && !Number.isSafeInteger(photoVersion)) return;
+  const source = custom && backgroundSnapshot.photoVersion === photoVersion && backgroundSnapshot.photo
+    ? backgroundSnapshot.photo : custom ? backgroundApi + "/photo?v=" + photoVersion : "./playlist-page-background.jpg";
+  layer.style.backgroundImage = `url("${source}")`;
+  layer.style.backgroundPosition = `${x}% ${y}%`;
+  layer.style.opacity = String(opacity / 100);
+}
+applyPageBackground(backgroundSnapshot);
+fetch(backgroundApi, { cache: "no-store", signal: AbortSignal.timeout(5000) })
+  .then((response) => response.ok ? response.json() : null)
+  .then((settings) => { if (settings) applyPageBackground(settings); })
+  .catch(() => {});
 const wishlistTrack = $("wishlist-gifts");
 let wishlistDrag;
 wishlistTrack.addEventListener("pointerdown", (event) => {
