@@ -171,7 +171,13 @@ if (backgroundSettings.visible && backgroundSettings.custom) {
   if (!customBackground.length || customBackground.length > 240000) throw new Error("Invalid background image size");
   backgroundSettings.photo = "./page-background-" + createHash("sha256").update(customBackground).digest("hex").slice(0, 16) + ".jpg";
 }
+const headerSettingsPattern = /(<script id="header-photo-settings" type="application\/json">)[\s\S]*?(<\/script>)/;
+if (!headerSettingsPattern.test(template)) throw new Error("Missing title photo settings");
+const headerSettingsResponse = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/header-photo-position", { signal: AbortSignal.timeout(15000) });
+if (!headerSettingsResponse.ok) throw new Error("Title photo settings unavailable");
+const { position: headerSettings } = await headerSettingsResponse.json();
 const publicSettingsData = [
+  [headerSettingsPattern, headerSettings],
   [pageBackgroundPattern, backgroundSettings],
   [wishlistPattern, wishlist],
   [messagePattern, message],
