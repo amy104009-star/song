@@ -228,6 +228,7 @@
     background: url("./playlist-background.jpg") center 31% / cover no-repeat;
     background-image: url("https://lili-songbook.easyarena3.chatgpt.site/api/header-photo"), url("./playlist-background.jpg");
     background-position: var(--playlist-photo-position, center 31%);
+    opacity: var(--playlist-photo-opacity, 1);
   }
   .playlist-header::after {
     z-index: -1;
@@ -420,14 +421,25 @@
   .wishlist-coin::before { content: ""; position: absolute; inset: 10%; border-radius: 50%; background: radial-gradient(ellipse .14em .16em at 25% 52%, #ffe067 74%, transparent 98%), radial-gradient(ellipse .15em .17em at 42% 34%, #ffed77 76%, transparent 98%), radial-gradient(ellipse .14em .16em at 62% 34%, #ffe467 76%, transparent 98%), radial-gradient(ellipse .13em .15em at 78% 52%, #ffdc56 76%, transparent 98%); }
   .wishlist-coin::after { content: ""; position: absolute; width: .47em; height: .35em; left: 51%; top: 65%; transform: translate(-50%,-50%) rotate(-5deg); border-radius: 66% 64% 49% 49%; background: linear-gradient(135deg,#ffed76,#ffd349); }
 </style>
+<script id="header-photo-settings" type="application/json">null</script>
 <script>
-  fetch("https://lili-songbook.easyarena3.chatgpt.site/api/header-photo-position", { cache: "no-store" })
-    .then((response) => response.ok ? response.json() : {})
-    .then(({ position }) => {
-      if (position && [position.x, position.y].every((value) => Number.isInteger(value) && value >= 0 && value <= 100)) {
-        document.documentElement.style.setProperty("--playlist-photo-position", `${position.x}% ${position.y}%`);
+  function applyHeaderPhotoSettings(position) {
+    const style = document.documentElement.style;
+    if (position && [position.x, position.y].every((value) => Number.isInteger(value) && value >= 0 && value <= 100)) {
+      style.setProperty("--playlist-photo-position", `${position.x}% ${position.y}%`);
+      const opacity = position.opacity;
+      if (Number.isInteger(opacity) && opacity >= 0 && opacity <= 100) {
+        style.setProperty("--playlist-photo-opacity", String(opacity / 100));
       }
-    })
+    } else {
+      style.removeProperty("--playlist-photo-position");
+      style.removeProperty("--playlist-photo-opacity");
+    }
+  }
+  applyHeaderPhotoSettings(JSON.parse(document.getElementById("header-photo-settings").textContent));
+  fetch("https://lili-songbook.easyarena3.chatgpt.site/api/header-photo-position", { cache: "no-store" })
+    .then((response) => response.ok ? response.json() : null)
+    .then((data) => { if (data) applyHeaderPhotoSettings(data.position); })
     .catch(() => {});
 </script>
 </head>
