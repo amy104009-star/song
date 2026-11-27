@@ -54,7 +54,7 @@ if (!template.includes(".playlist-header::before,") || !template.includes("cente
 if (!template.includes('id="daily-fortune" hidden') || !template.includes("fortunePanel.hidden = visible === false")) {
   throw new Error("The daily fortune visibility setting is missing");
 }
-if (!template.includes('id="playlist-wishlist"') || !template.includes("/api/wishlist") || !template.includes("wishlist-photo-frame") || !template.includes("--gift-extra-bottom")) {
+if (!template.includes('id="playlist-wishlist"') || !template.includes("/api/wishlist") || !template.includes("wishlist-photo-frame") || !template.includes("wishlist-price") || !template.includes("aspect-ratio: 1; overflow: hidden;")) {
   throw new Error("The public wishlist is missing");
 }
 if (!template.includes(".wishlist-coin::after") || !template.includes("at 42% 34%")) {
