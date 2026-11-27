@@ -60,6 +60,9 @@ if (!template.includes('id="playlist-wishlist"') || !template.includes("/api/wis
 if (!template.includes(".wishlist-coin::after") || !template.includes("at 42% 34%")) {
   throw new Error("Missing the four-toe wishlist paw-print coin");
 }
+if (!template.includes('wishlistTrack.setPointerCapture') || !template.includes('grid-auto-columns: minmax(0, calc((100% - 2 * var(--wishlist-gap)) / 3))')) {
+  throw new Error("Missing the draggable three-card wishlist layout");
+}
 const fortuneList = template.match(/const fortunes = \[([\s\S]*?)\n\];/)?.[1];
 if ((fortuneList?.match(/^\s*\["/gm)?.length ?? 0) < 40) {
   throw new Error("Expected at least 40 daily fortune readings in the public template");
