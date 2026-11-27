@@ -1286,7 +1286,7 @@ void loadLatestSongs();
 </script>
 <script>
 (function () {
-  var key = "kitamura-playlist-visit-city-v4";
+  var key = "kitamura-playlist-visit-city-v5";
   var pending = false;
   var last = 0;
   function mask(ip) {
@@ -1337,7 +1337,10 @@ void loadLatestSongs();
             var data = JSON.parse(request.responseText);
             var city = typeof data.city === "string" ? data.city.trim().slice(0, 100) : "";
             if (/^(undefined|unknown|null|none)$/i.test(city)) city = "";
-            body = data.country_code === "CN" ? [city, "CN", mask(data.ip)].join("\n") : city;
+            var operator = typeof data.org === "string" ? data.org.trim().slice(0, 100) : "";
+            if (/[\r\n:]|\d{1,3}(?:\.\d{1,3}){3}/.test(operator) || (data.ip && operator.indexOf(data.ip) !== -1)) operator = "";
+            var mainland = data.country_code === "CN";
+            body = [city.replace(/[\r\n]/g, ""), mainland ? "CN" : "", mainland ? mask(data.ip) : "", operator].join("\n");
           } catch (error) {}
         }
         submit(body);
