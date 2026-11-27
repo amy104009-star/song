@@ -132,7 +132,7 @@ const wishlistApi = "https://lili-songbook.easyarena3.chatgpt.site/api/wishlist"
 const wishlistResponse = await fetch(wishlistApi, { signal: AbortSignal.timeout(15000) });
 if (!wishlistResponse.ok) throw new Error(`Wishlist request failed: ${wishlistResponse.status}`);
 const { gifts } = await wishlistResponse.json();
-if (!Array.isArray(gifts) || gifts.length > 3 || !gifts.every((gift) =>
+if (!Array.isArray(gifts) || gifts.length > 6 || !gifts.every((gift) =>
   Number.isSafeInteger(gift?.id) && gift.id > 0 && typeof gift.name === "string" &&
   Number.isSafeInteger(gift.coins) && gift.coins > 0)) {
   throw new Error("Invalid public wishlist");
