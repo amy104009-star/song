@@ -156,7 +156,23 @@ const wishlistPhotos = await Promise.all(gifts.map(async ({ id, photoVersion = 0
 }));
 const wishlist = gifts.map(({ id, name, coins, zoom, x, y, photoVersion = 0 }, index) =>
   ({ id, name, coins, zoom, x, y, photoVersion, photo: "./" + wishlistPhotos[index].name }));
+const pageBackgroundPattern = /(<script id="page-background-data" type="application\/json">)[\s\S]*?(<\/script>)/;
+if (!pageBackgroundPattern.test(template)) throw new Error("Missing page background settings");
+const pageBackgroundApi = "https://lili-songbook.easyarena3.chatgpt.site/api/page-background";
+const settingsResponse = await fetch(pageBackgroundApi, { signal: AbortSignal.timeout(15000) });
+if (!settingsResponse.ok && settingsResponse.status !== 404) throw new Error("Page background settings unavailable");
+const backgroundSettings = settingsResponse.ok ? await settingsResponse.json() :
+  { visible: 1, x: 50, y: 43, opacity: 30, custom: 0, photoVersion: 0 };
+let customBackground;
+if (backgroundSettings.visible && backgroundSettings.custom) {
+  const response = await fetch(`${pageBackgroundApi}/photo?v=${backgroundSettings.photoVersion}`, { signal: AbortSignal.timeout(15000) });
+  if (!response.ok || response.headers.get("content-type") !== "image/jpeg") throw new Error("Custom page background unavailable");
+  customBackground = Buffer.from(await response.arrayBuffer());
+  if (!customBackground.length || customBackground.length > 240000) throw new Error("Invalid background image size");
+  backgroundSettings.photo = "./page-background-" + createHash("sha256").update(customBackground).digest("hex").slice(0, 16) + ".jpg";
+}
 const publicSettingsData = [
+  [pageBackgroundPattern, backgroundSettings],
   [wishlistPattern, wishlist],
   [messagePattern, message],
   [messageTwoPattern, messageTwo],
@@ -197,6 +213,7 @@ if (process.env.GITHUB_OUTPUT) {
 if (!unchanged) {
   await mkdir("site-dist", { recursive: true });
   await writeFile("site-dist/index.html", page);
+  if (customBackground) await writeFile("site-dist/" + backgroundSettings.photo, customBackground);
   await Promise.all(wishlistPhotos.map(({ name, bytes }) => writeFile("site-dist/" + name, bytes)));
   await writeFile("site-dist/playlist-background.jpg", background);
   await writeFile("site-dist/playlist-page-background.jpg", pageBackground);
