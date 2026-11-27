@@ -1298,9 +1298,15 @@ function maskVisitNetwork(ip) {
   return prefix.slice(0, 3).map((part) => parseInt(part, 16).toString(16)).join(":") + "::/48";
 }
 
+const playlistVisitKey = "kitamura-playlist-visit-city-v3";
+const playlistVisitCooldown = 5 * 60 * 1000;
+let visitPending = false;
+let lastVisitAt = 0;
 async function recordPlaylistVisit() {
-  const key = "kitamura-playlist-visit-city-v2";
-  try { if (sessionStorage.getItem(key)) return; } catch {}
+  if (visitPending || document.hidden) return;
+  try { lastVisitAt = Math.max(lastVisitAt, Number(sessionStorage.getItem(playlistVisitKey)) || 0); } catch {}
+  if (Date.now() - lastVisitAt < playlistVisitCooldown) return;
+  visitPending = true;
   let city = "";
   let mainland = false;
   let network = "";
@@ -1321,10 +1327,18 @@ async function recordPlaylistVisit() {
     const response = await fetch("https://lili-songbook.easyarena3.chatgpt.site/api/playlist-visits", {
       method: "POST", credentials: "omit", keepalive: true, body: mainland ? [city, "CN", network].join("\n") : city || undefined,
     });
-    if (response.ok) sessionStorage.setItem(key, "1");
-  } catch {}
+    if (response.ok) {
+      lastVisitAt = Date.now();
+      try { sessionStorage.setItem(playlistVisitKey, String(lastVisitAt)); } catch {}
+    }
+  } catch {
+  } finally {
+    visitPending = false;
+  }
 }
 void recordPlaylistVisit();
+window.addEventListener("pageshow", () => void recordPlaylistVisit());
+document.addEventListener("visibilitychange", () => void recordPlaylistVisit());
 
 </script>
 </body>
