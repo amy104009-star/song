@@ -64,6 +64,7 @@ if (!template.includes('wishlistTrack.setPointerCapture') || !template.includes(
 }
 if (!template.includes("first.coins - second.coins")) throw new Error("Missing wishlist price sorting");
 if (!template.includes("font-size: .72rem; white-space: nowrap;")) throw new Error("Missing single-line wishlist price style");
+if (!template.includes('void recordPlaylistVisit();')) throw new Error("Missing playlist visit recording");
 const fortuneList = template.match(/const fortunes = \[([\s\S]*?)\n\];/)?.[1];
 if ((fortuneList?.match(/^\s*\["/gm)?.length ?? 0) < 40) {
   throw new Error("Expected at least 40 daily fortune readings in the public template");
