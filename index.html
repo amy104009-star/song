@@ -781,7 +781,7 @@ function renderAnnouncements() {
   const remaining = announcements.lastAddedAt + announcementDays - Date.now();
   const songsById = new Map(songs.map((song) => [song.id, song]));
   const recent = remaining > 0
-    ? [...announcements.ids].reverse().map((id) => songsById.get(id)).filter(Boolean)
+    ? [...announcements.ids].reverse().map((id) => songsById.get(id)).filter(Boolean).slice(0, 4)
     : [];
   if (remaining > 0) {
     announcementTimer = setTimeout(renderAnnouncements, Math.min(remaining, 2_147_483_647));
