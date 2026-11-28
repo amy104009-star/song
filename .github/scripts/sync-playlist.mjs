@@ -164,6 +164,10 @@ const settingsResponse = await fetch(pageBackgroundApi, { signal: AbortSignal.ti
 if (!settingsResponse.ok && settingsResponse.status !== 404) throw new Error("Page background settings unavailable");
 const backgroundSettings = settingsResponse.ok ? await settingsResponse.json() :
   { visible: 1, x: 50, y: 43, opacity: 30, custom: 0, photoVersion: 0 };
+if (backgroundSettings.theme != null && !["background", "surface", "accent", "ink"].every((key) =>
+  typeof backgroundSettings.theme[key] === "string" && /^#[0-9a-f]{6}$/i.test(backgroundSettings.theme[key]))) {
+  throw new Error("Invalid public playlist theme");
+}
 let customBackground;
 if (backgroundSettings.visible && backgroundSettings.custom) {
   const response = await fetch(`${pageBackgroundApi}/photo?v=${backgroundSettings.photoVersion}`, { signal: AbortSignal.timeout(15000) });
